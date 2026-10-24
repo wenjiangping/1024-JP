@@ -1,0 +1,361 @@
+// Go Lita - first playable runner. Edit tuning values here, then click Run.
+var (
+	Score            int
+	RunTime          float64
+	Speed            float64
+	Running          bool
+	Mushrooms        int
+	Diamonds         int
+	playerY          float64
+	jumpVelocity     float64
+	grounded         bool
+	jumpHeld         bool
+	restartHeld      bool
+	scoredSeconds    int
+	nextFlame        float64
+	flameActive      bool
+	animation        string
+	ground1X         float64
+	ground2X         float64
+	ground3X         float64
+	ledge4X          float64
+	ledge5X          float64
+	mushroomX        float64
+	diamondX         float64
+	flameX           float64
+	cloud1X          float64
+	cloud2X          float64
+	cloud3X          float64
+	ledge4Collected  bool
+	ledge5Collected  bool
+	jumpRequested    bool
+	restartRequested bool
+)
+
+// One reset path for the first run and R-key retries.
+func resetRun() {
+	stopAllSounds
+	Score = 0
+	RunTime = 0
+	Speed = 65
+	Running = true
+	Mushrooms = 0
+	Diamonds = 0
+	scoredSeconds = 0
+	playerY = -84
+	jumpVelocity = 0
+	grounded = true
+	jumpHeld = true
+	nextFlame = 8
+	flameActive = false
+	ground1X = -232
+	ground2X = 0
+	ground3X = 232
+	ledge4X = 360
+	ledge5X = 850
+	mushroomX = -35
+	diamondX = 20
+	flameX = 300
+	cloud1X = -160
+	cloud2X = 8
+	cloud3X = 197
+	ledge4Collected = false
+	ledge5Collected = false
+	Lita.setPhysicsMode NoPhysics
+	Lita.setRotationStyle LeftRight
+	Lita.setHeading Right
+	Lita.setSize 0.1
+	Lita.setXYpos -150, playerY
+	Lita.clearGraphicEffects
+	Lita.say ""
+	Lita.show
+	Lita.animate "Walk", true
+	animation = "Walk"
+	草地.setPhysicsMode NoPhysics
+	草地2.setPhysicsMode NoPhysics
+	草地3.setPhysicsMode NoPhysics
+	草地4.setPhysicsMode NoPhysics
+	草地5.setPhysicsMode NoPhysics
+	草地.setXYpos -232, -140
+	草地2.setXYpos 0, -140
+	草地3.setXYpos 232, -140
+	草地.setSize 0.185
+	草地2.setSize 0.185
+	草地3.setSize 0.185
+	草地4.setXYpos 360, -80
+	草地5.setXYpos 850, -65
+	草地4.hide
+	草地5.hide
+	草地4.setSize 0.1
+	草地5.setSize 0.1
+	水晶1.setXYpos 20, -70
+	水晶2.setXYpos 360, -38
+	水晶3.setXYpos 850, -23
+	水晶1.setSize 0.11
+	水晶2.setSize 0.11
+	水晶3.setSize 0.11
+	蘑菇.setXYpos -35, -100
+	蘑菇.setSize 0.23
+	水晶1.show
+	水晶2.hide
+	水晶3.hide
+	蘑菇.show
+	火焰.setSize 0.28
+	火焰.setXYpos 300, -87
+	火焰.hide
+	白云.setXYpos -160, 107
+	白云2.setXYpos 8, 73
+	白云3.setXYpos 197, 112
+	println "Go Lita: run started"
+}
+
+// Capture brief key taps/clicks as well as held input.
+onKey KeySpace, => {
+	if !jumpHeld {
+		jumpRequested = true
+	}
+}
+onKey KeyUp, => {
+	if !jumpHeld {
+		jumpRequested = true
+	}
+}
+onKey KeyR, => {
+	if !restartHeld {
+		restartRequested = true
+	}
+}
+onClick => {
+	jumpRequested = true
+}
+
+onStart => {
+	setVolume 35
+	resetTimer
+	resetRun
+	lastTime := timer
+	forever => {
+		now := timer
+		dt := now - lastTime
+		lastTime = now
+		// Cap inactive-tab catch-up; scoring and movement share active simulation time.
+		if dt > 0.05 {
+			dt = 0.05
+		}
+		restartDown := keyPressed(KeyR)
+		if restartRequested || restartDown && !restartHeld {
+			resetRun
+			restartRequested = false
+			jumpRequested = false
+		}
+		restartHeld = restartDown
+		jumpDown := keyPressed(KeySpace) || keyPressed(KeyUp) || mousePressed
+		if Running {
+			RunTime += dt
+			Speed = 65 * (1 + 0.04*float64(int(RunTime/30)))
+			if Speed > 81.25 {
+				Speed = 81.25
+			}
+			seconds := int(RunTime)
+			if seconds > scoredSeconds {
+				Score += (seconds - scoredSeconds) * 10
+				scoredSeconds = seconds
+				if seconds%30 == 0 {
+					println "Go Lita: active seconds / speed", seconds, Speed
+				}
+			}
+			dx := Speed * dt
+			// Three overlapping tiles make an endless, gap-free safe floor.
+			// Keep logical positions: SPX fences rendered sprites at stage edges.
+			ground1X -= dx
+			ground2X -= dx
+			ground3X -= dx
+			if ground1X < -348 {
+				ground1X += 696
+			}
+			if ground2X < -348 {
+				ground2X += 696
+			}
+			if ground3X < -348 {
+				ground3X += 696
+			}
+			草地.setXpos ground1X
+			草地2.setXpos ground2X
+			草地3.setXpos ground3X
+			ledge4X -= dx
+			ledge5X -= dx
+			if ledge4X < -340 {
+				ledge4X += 980
+				ledge4Collected = false
+			}
+			if ledge5X < -340 {
+				ledge5X += 980
+				ledge5Collected = false
+			}
+			草地4.setXpos ledge4X
+			草地5.setXpos ledge5X
+			if ledge4X > 310 || ledge4X < -310 {
+				草地4.hide
+			} else {
+				草地4.show
+			}
+			if ledge5X > 310 || ledge5X < -310 {
+				草地5.hide
+			} else {
+				草地5.show
+			}
+			// Clouds are decorative and move more slowly than the path.
+			cloud1X -= dx * 0.15
+			cloud2X -= dx * 0.1
+			cloud3X -= dx * 0.12
+			if cloud1X < -280 {
+				cloud1X += 560
+			}
+			if cloud2X < -280 {
+				cloud2X += 560
+			}
+			if cloud3X < -280 {
+				cloud3X += 560
+			}
+			白云.setXpos cloud1X
+			白云2.setXpos cloud2X
+			白云3.setXpos cloud3X
+			// Rising-edge input: holding a key never causes repeated jumps.
+			if (jumpRequested || jumpDown && !jumpHeld) && grounded {
+				jumpVelocity = 310
+				grounded = false
+				println "Go Lita: jump"
+			}
+			wasGrounded := grounded
+			oldFeet := playerY - 27
+			jumpVelocity -= 560 * dt
+			playerY += jumpVelocity * dt
+			grounded = false
+			// Optional grass ledges are one-way: land from above, pass below safely.
+			if jumpVelocity <= 0 {
+				top4 := -62.0
+				if -140 > ledge4X-64 && -140 < ledge4X+64 && oldFeet >= top4-0.5 && playerY-27 <= top4 {
+					if !wasGrounded {
+						println "Go Lita: landed on grass4"
+					}
+					playerY = top4 + 27
+					jumpVelocity = 0
+					grounded = true
+				}
+				top5 := -47.0
+				if -140 > ledge5X-64 && -140 < ledge5X+64 && oldFeet >= top5-0.5 && playerY-27 <= top5 {
+					if !wasGrounded {
+						println "Go Lita: landed on grass5"
+					}
+					playerY = top5 + 27
+					jumpVelocity = 0
+					grounded = true
+				}
+			}
+			if playerY <= -84 {
+				playerY = -84
+				jumpVelocity = 0
+				grounded = true
+			}
+			Lita.setYpos playerY
+			if grounded && animation != "Walk" {
+				Lita.animate "Walk", true
+				animation = "Walk"
+			}
+			if !grounded && animation != "Jump" {
+				Lita.animate "Jump", true
+				animation = "Jump"
+			}
+			// Recycle a fixed pool of items; no unbounded clone accumulation.
+			mushroomX -= dx
+			diamondX -= dx
+			if mushroomX < -280 {
+				mushroomX = rand(280.0, 420.0)
+				蘑菇.show
+			}
+			if diamondX < -280 {
+				diamondX = rand(330.0, 470.0)
+				水晶1.show
+			}
+			蘑菇.setXpos mushroomX
+			水晶1.setXpos diamondX
+			水晶2.setXpos ledge4X
+			水晶3.setXpos ledge5X
+			if ledge4Collected || ledge4X > 280 || ledge4X < -280 {
+				水晶2.hide
+			} else {
+				水晶2.show
+			}
+			if ledge5Collected || ledge5X > 280 || ledge5X < -280 {
+				水晶3.hide
+			} else {
+				水晶3.show
+			}
+			// Compact body/food boxes deliberately ignore Lita's large tail.
+			if 蘑菇.visible && mushroomX > -164 && mushroomX < -116 && playerY > -126 && playerY < -67 {
+				蘑菇.hide
+				Mushrooms++
+				Score += 50
+				println "Go Lita: mushroom +50"
+			}
+			if 水晶1.visible && diamondX > -164 && diamondX < -116 && playerY > -103 && playerY < -37 {
+				水晶1.hide
+				Diamonds++
+				Score += 100
+				println "Go Lita: diamond +100"
+			}
+			if 水晶2.visible && ledge4X > -164 && ledge4X < -116 && playerY > -71 && playerY < -5 {
+				水晶2.hide
+				ledge4Collected = true
+				Diamonds++
+				Score += 100
+				println "Go Lita: ledge diamond +100"
+			}
+			if 水晶3.visible && ledge5X > -164 && ledge5X < -116 && playerY > -56 && playerY < 10 {
+				水晶3.hide
+				ledge5Collected = true
+				Diamonds++
+				Score += 100
+				println "Go Lita: ledge diamond +100"
+			}
+			// A single low flame arrives slowly, with long gaps and an 8-second safe start.
+			if !flameActive && RunTime >= nextFlame {
+				flameX = 300
+				火焰.setXpos flameX
+				// Do not put a hazard beneath an optional ledge or its reward.
+				if ledge4X < 440 && ledge4X > 80 || ledge5X < 440 && ledge5X > 80 {
+					nextFlame = RunTime + 2
+				} else {
+					flameActive = true
+					火焰.show
+					火焰.animate "火焰", true
+				}
+			}
+			if flameActive {
+				flameX -= dx
+				火焰.setXpos flameX
+				// Food is never offered inside a flame's danger zone.
+				if mushroomX > flameX-70 && mushroomX < flameX+70 {
+					蘑菇.hide
+				}
+				if diamondX > flameX-70 && diamondX < flameX+70 {
+					水晶1.hide
+				}
+				if flameX < -280 {
+					火焰.hide
+					flameActive = false
+					nextFlame = RunTime + rand(1.5, 3.0)
+				}
+				if flameX > -156 && flameX < -124 && playerY-27 < -86 {
+					Running = false
+					Lita.animate "Fall"
+					Lita.say "按 R，再跑一趟！"
+					println "Go Lita: run stopped; score / mushrooms / diamonds / seconds", Score, Mushrooms, Diamonds, RunTime
+				}
+			}
+		}
+		jumpRequested = false
+		jumpHeld = jumpDown
+		wait 0.02
+	}
+}
