@@ -1,8 +1,11 @@
-// The button owns its pointer input; it never triggers a play-area jump.
+// User-supplied green control, with pointer bounds matching its visible 42px box.
 var held bool
-onMsg "setup", => { held = true; setXYpos -203, -153; setLayer Front; show }
+onMsg "setup", => { held = true }
+onMsg "uiTick", => {
+    setXYpos -205, -156
+    setSize 0.21
+    if Screen == 2 { show; setLayer Front } else { hide }
+}
 onMsg "input", => {
-    pressed := mousePressed && mouseX > -226 && mouseX < -180 && mouseY > -176 && mouseY < -130
-    UILeft = pressed
-    held = pressed
+    UILeft = Screen == 2 && InputReady && !Paused && mousePressed && mouseX > -226 && mouseX < -184 && mouseY > -177 && mouseY < -135
 }

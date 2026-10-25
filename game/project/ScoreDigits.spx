@@ -1,0 +1,27 @@
+// Clone slots display the current score, including zero, in HUD or settlement.
+var Slot int
+onStart => { hide }
+onMsg "clear", => { if isCloned { die } }
+onMsg "setup", => {
+    if !isCloned { hide; for i := 0; i < 8; i++ { Slot = i; clone } }
+}
+onMsg "uiTick", => {
+    if !isCloned { return }
+    n := Score
+    count := 1
+    for n >= 10 { n /= 10; count++ }
+    if Screen == 0 || Slot >= count { hide; return }
+    n = Score
+    for i := 0; i < Slot; i++ { n /= 10 }
+    setCostume n % 10
+    if Screen == 3 {
+        setSize 0.6
+        setXYpos -66 + (float64(count-1)/2-float64(Slot))*30, -59
+    } else {
+        setSize 0.2
+        setXYpos -155 + (float64(count-1)/2-float64(Slot))*9, 162
+    }
+    show
+    setLayer Front
+}
+onMsg "scoreFront", => { if isCloned { setLayer Front } }

@@ -34,10 +34,10 @@ func solid(cx float64, hw float64, bottom float64, top float64, step bool) {
     PlayerX = BodyX - float64(Facing) * 11
 }
 
-onMsg "requestJump", => { if !jumpHeld && Running && !Paused { requestedJump = true } }
-onKey KeySpace, => { if !jumpHeld && Running && !Paused { requestedJump = true } }
-onKey KeyUp, => { if !jumpHeld && Running && !Paused { requestedJump = true } }
-onKey KeyW, => { if !jumpHeld && Running && !Paused { requestedJump = true } }
+onMsg "requestJump", => { if !jumpHeld && Running && !Paused && InputReady { requestedJump = true } }
+onKey KeySpace, => { if !jumpHeld && Running && !Paused && InputReady { requestedJump = true } }
+onKey KeyUp, => { if !jumpHeld && Running && !Paused && InputReady { requestedJump = true } }
+onKey KeyW, => { if !jumpHeld && Running && !Paused && InputReady { requestedJump = true } }
 onMsg "setup", => {
     setPhysicsMode KinematicPhysics
     setRotationStyle LeftRight
@@ -71,6 +71,7 @@ onMsg "physics", => {
     pushed = false
     leftDown := keyPressed(KeyLeft) || keyPressed(KeyA) || UILeft || leftPulseFrames > 0
     rightDown := keyPressed(KeyRight) || keyPressed(KeyD) || UIRight || rightPulseFrames > 0
+    if !InputReady { leftDown = false; rightDown = false }
     move := 0
     if leftDown && !rightDown { move = -1 }
     if rightDown && !leftDown { move = 1 }
@@ -89,6 +90,7 @@ onMsg "physics", => {
     if BodyX > 196 { BodyX = 196 }
     PlayerX = BodyX - float64(Facing) * 11
     down := keyPressed(KeySpace) || keyPressed(KeyUp) || keyPressed(KeyW) || UIJump || (mousePressed && mouseY > -122)
+    if !InputReady { down = false; requestedJump = false }
     if requestedJump || down && !jumpHeld { bufferedJump = 0.12 }
     requestedJump = false
     jumpHeld = down
@@ -124,7 +126,7 @@ onMsg "physics", => {
 onMsg "pickupSound", => { play "获得宝石" }
 onMsg "finished", => {
     animate "Fall"
-    say EndReason + " · 按 R 重试"
+    say ""
 }
 onMsg "pauseChanged", => {
     requestedJump = false

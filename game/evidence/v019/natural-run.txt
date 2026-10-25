@@ -1,0 +1,159 @@
+  - generic "Console panel":
+    - generic: 控制台
+    - list:
+      - generic: 20:17:12.727
+      - link "舞台:90":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 0 蹦跶小新手 58 0.5
+      - generic: 20:17:12.728
+      - link "舞台:174":
+        - /url: javascript:;
+      - text: DENSITY 0 0.5 0 0.5
+      - generic: 20:17:12.728
+      - link "舞台:194":
+        - /url: javascript:;
+      - text: CHUNK 3 1 0 319 -102 0 0
+      - generic: 20:17:12.729
+      - link "舞台:174":
+        - /url: javascript:;
+      - text: DENSITY 0 0.5 1 0
+      - generic: 20:17:12.730
+      - link "舞台:194":
+        - /url: javascript:;
+      - text: CHUNK 4 1 0 297 -102 2 0
+      - generic: 20:17:12.770
+      - link "舞台:240":
+        - /url: javascript:;
+      - text: START 1
+      - generic: 20:17:12.771
+      - link "舞台:257":
+        - /url: javascript:;
+      - text: SCREEN HOME
+      - generic: 20:18:17.997
+      - link "舞台:90":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 0 蹦跶小新手 58 0.5
+      - generic: 20:18:17.998
+      - link "舞台:174":
+        - /url: javascript:;
+      - text: DENSITY 0 0.5 0 0.5
+      - generic: 20:18:17.998
+      - link "舞台:194":
+        - /url: javascript:;
+      - text: CHUNK 3 1 0 303 -102 0 0
+      - generic: 20:18:17.999
+      - link "舞台:174":
+        - /url: javascript:;
+      - text: DENSITY 0 0.5 1 0
+      - generic: 20:18:17.999
+      - link "舞台:194":
+        - /url: javascript:;
+      - text: CHUNK 4 1 0 320 -102 2 0
+      - generic: 20:18:18.031
+      - link "舞台:240":
+        - /url: javascript:;
+      - text: START 2
+      - generic: 20:18:18.032
+      - link "舞台:264":
+        - /url: javascript:;
+      - text: SCREEN HELP
+      - generic: 20:18:41.890
+      - link "舞台:90":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 0 蹦跶小新手 58 0.5
+      - generic: 20:18:41.891
+      - link "舞台:174":
+        - /url: javascript:;
+      - text: DENSITY 0 0.5 0 0.5
+      - generic: 20:18:41.891
+      - link "舞台:194":
+        - /url: javascript:;
+      - text: CHUNK 3 1 0 299 -102 0 0
+      - generic: 20:18:41.892
+      - link "舞台:174":
+        - /url: javascript:;
+      - text: DENSITY 0 0.5 1 0
+      - generic: 20:18:41.892
+      - link "舞台:194":
+        - /url: javascript:;
+      - text: CHUNK 4 1 0 295 -102 3 0
+      - generic: 20:18:41.924
+      - link "舞台:240":
+        - /url: javascript:;
+      - text: START 3
+      - generic: 20:18:41.924
+      - link "舞台:307":
+        - /url: javascript:;
+      - text: SCREEN PLAY
+      - generic: 20:18:41.925
+      - link "舞台:333":
+        - /url: javascript:;
+      - text: PACE 0 58 0
+      - generic: 20:18:43.357
+      - link "舞台:100":
+        - /url: javascript:;
+      - text: HARVEST 1 1 0
+      - generic: 20:18:44.357
+      - link "舞台:100":
+        - /url: javascript:;
+      - text: HARVEST 2 2 0
+      - generic: 20:18:47.315
+      - link "舞台:174":
+        - /url: javascript:;
+      - text: DENSITY 0 0.5 0 0.5
+      - generic: 20:18:47.316
+      - link "舞台:194":
+        - /url: javascript:;
+      - text: CHUNK 0 2 0 314 -110 0 0
+      - generic: 20:18:49.080
+      - link "舞台:100":
+        - /url: javascript:;
+      - text: HARVEST 3 3 0
+      - generic: 20:18:50.063
+      - link "舞台:100":
+        - /url: javascript:;
+      - text: HARVEST 4 4 0
+      - generic: 20:18:53.039
+      - link "舞台:194":
+        - /url: javascript:;
+      - text: CHUNK 1 0 0 293 -94 0 0
+      - generic: 20:18:54.692
+      - link "舞台:100":
+        - /url: javascript:;
+      - text: HARVEST 5 5 0
+      - generic: 20:18:55.698
+      - link "舞台:100":
+        - /url: javascript:;
+      - text: HARVEST 6 6 0
+      - generic: 20:18:58.668
+      - link "舞台:174":
+        - /url: javascript:;
+      - text: DENSITY 0 0.5 1 0
+      - generic: 20:18:58.673
+      - link "舞台:194":
+        - /url: javascript:;
+      - text: CHUNK 2 2 0 325 -94 3 0
+      - generic: 20:18:59.975
+      - link "舞台:100":
+        - /url: javascript:;
+      - text: HARVEST 7 7 0
+      - generic: 20:19:01.320
+      - link "舞台:100":
+        - /url: javascript:;
+      - text: HARVEST 8 8 0
+      - generic: 20:19:03.360
+      - link "Lita:118":
+        - /url: javascript:;
+      - text: BLOCK -135.62400000000164 -102
+      - generic: 20:19:04.292
+      - link "舞台:174":
+        - /url: javascript:;
+      - text: DENSITY 0 0.5 0 0.5
+      - generic: 20:19:04.292
+      - link "舞台:194":
+        - /url: javascript:;
+      - text: CHUNK 3 6 0 303 -110 0 0
+      - generic: 20:19:05.321
+      - link "舞台:111":
+        - /url: javascript:;
+      - text: FINISH 被障碍挤出小径了 8 8 0 22.245999999999977 -249.76800000000185 -102

@@ -1,15 +1,14 @@
-// Event clicks plus held-pointer fallback, with one action per press.
+// User-supplied green control, with pointer bounds matching its visible 42px box.
 var held bool
-func tap() {
-    if !held && mouseX > 91 && mouseX < 137 && mouseY > -176 && mouseY < -130 {
-        WantsRetry = true
-        held = true
-    }
+onMsg "setup", => { held = true }
+onMsg "uiTick", => {
+    setXYpos 120, -156
+    setSize 0.21
+    if Screen == 2 { show; setLayer Front } else { hide }
 }
-onMsg "setup", => { held = true; setXYpos 114, -153; setLayer Front; show }
-onClick => { tap }
-onMsg "pointerTap", => { tap }
 onMsg "input", => {
-    pressed := mousePressed && mouseX > 91 && mouseX < 137 && mouseY > -176 && mouseY < -130
-    if pressed { tap } else { held = false }
+    down := Screen == 2 && mousePressed && mouseX > 99 && mouseX < 141 && mouseY > -177 && mouseY < -135
+    if down && !held { WantsRetry = true }
+    held = down
 }
+onClick => { if Screen == 2 && !held { WantsRetry = true; held = true } }

@@ -1,15 +1,12 @@
-// The button owns its pointer input; it never triggers a play-area jump.
+// User-supplied green control, with pointer bounds matching its visible 42px box.
 var held bool
-onMsg "setup", => { held = true; setXYpos 201, -153; setLayer Front; show }
+onMsg "setup", => { held = true }
+onMsg "uiTick", => {
+    setXYpos 212, -156
+    setSize 0.21
+    if Screen == 2 { show; setLayer Front } else { hide }
+}
 onMsg "input", => {
-    pressed := mousePressed && mouseX > 178 && mouseX < 224 && mouseY > -176 && mouseY < -130
-    UIJump = pressed
-    held = pressed
+    UIJump = Screen == 2 && InputReady && !Paused && mousePressed && mouseX > 191 && mouseX < 233 && mouseY > -177 && mouseY < -135
 }
-
-// Event input preserves quick taps between frame polls.
-onClick => { broadcast "requestJump" }
-
-onMsg "pointerTap", => {
-    if mouseX > 178 && mouseX < 224 && mouseY > -176 && mouseY < -130 { broadcast "requestJump" }
-}
+onClick => { if Screen == 2 && InputReady && !Paused { broadcast "requestJump" } }

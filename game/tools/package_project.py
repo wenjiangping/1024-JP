@@ -6,7 +6,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 GAME = Path(__file__).resolve().parents[1]
 PROJECT = GAME / "project"
-PACKAGE = GAME / "Go-Lita-runner-v0.3.xbp"
+PACKAGE = GAME / "Go-Lita-runner-v0.4.xbp"
 
 
 def read_json(path):
@@ -21,13 +21,15 @@ def validate_project():
                for z in stage["zorder"]), "Removed Hint monitor reappeared"
     assert "QAScenario" not in (PROJECT / "main.spx").read_text(encoding="utf-8"), \
         "Temporary playtest fixture must not ship"
+    assert "QAFlow" not in (PROJECT / "main.spx").read_text(encoding="utf-8"), \
+        "Temporary screen audit must not ship"
     ids, names = [], []
     expected_controls = {
-        "MoveLeft": (-210, -150, 1),
-        "MoveRight": (-160, -150, 1),
-        "JumpButton": (-110, -150, 1),
-        "PauseButton": (160, -150, 1),
-        "RetryButton": (210, -150, 1),
+        "MoveLeft": (-205, -156, 0.21),
+        "MoveRight": (-150, -156, 0.21),
+        "JumpButton": (212, -156, 0.21),
+        "PauseButton": (65, -156, 0.21),
+        "RetryButton": (120, -156, 0.21),
     }
     expected_physics = {
         "Lita": "kinematic",
@@ -55,6 +57,8 @@ def validate_project():
             expected = expected_controls[directory.name]
             actual = (config["x"], config["y"], config["size"])
             assert actual == expected, f"Control geometry changed: {directory.name}"
+            assert config["collisionShapeParams"] == [200.0, 200.0], \
+                f"Control collision bounds differ from the supplied art: {directory.name}"
         require_resource(PROJECT, directory.name + ".spx")
         ids.append(config["builder_id"])
         names.append(directory.name)
