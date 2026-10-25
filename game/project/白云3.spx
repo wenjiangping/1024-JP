@@ -1,0 +1,7 @@
+var CloudX float64
+onMsg "setup", => { CloudX = 197; setXYpos CloudX, 112; show }
+onMsg "render", => {
+    if Running && !Paused { CloudX -= Speed * DT * 0.12 }
+    if CloudX < -295 { CloudX += 590 }
+    setXpos CloudX
+}

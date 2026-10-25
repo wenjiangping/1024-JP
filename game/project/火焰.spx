@@ -1,0 +1,23 @@
+// Hazard 1 has its own drawing and body-only contact test.
+var Slot int
+onStart => { hide }
+onMsg "clear", => { if isCloned { die } }
+onMsg "setup", => {
+    if !isCloned {
+        hide
+        for i := 0; i < 5; i++ { Slot = i; clone }
+    }
+}
+onMsg "render", => {
+    if isCloned {
+        setSize 0.25
+        setXYpos HX[Slot], HY[Slot] + 22
+        if HazardKind[Slot] == 1 && HX[Slot] > -275 && HX[Slot] < 275 {
+            show
+
+            if Running && !Paused && BodyX + 9 > HX[Slot] - 7 && BodyX - 9 < HX[Slot] + 7 && PlayerFeet < HY[Slot] + 23 && PlayerFeet + 45 > HY[Slot] + 3 {
+                finishRun "碰到小火苗了"
+            }
+        } else { hide }
+    }
+}

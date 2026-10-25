@@ -1,0 +1,8 @@
+// The button owns its pointer input; it never triggers a play-area jump.
+var held bool
+onMsg "setup", => { held = true; setXYpos -148, -153; setLayer Front; show }
+onMsg "input", => {
+    pressed := mousePressed && mouseX > -171 && mouseX < -125 && mouseY > -176 && mouseY < -130
+    UIRight = pressed
+    held = pressed
+}

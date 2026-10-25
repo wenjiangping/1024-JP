@@ -1,0 +1,15 @@
+// Event clicks plus held-pointer fallback, with one action per press.
+var held bool
+func tap() {
+    if !held && mouseX > 37 && mouseX < 83 && mouseY > -176 && mouseY < -130 {
+        WantsPause = true
+        held = true
+    }
+}
+onMsg "setup", => { held = true; setXYpos 60, -153; setLayer Front; show }
+onClick => { tap }
+onMsg "pointerTap", => { tap }
+onMsg "input", => {
+    pressed := mousePressed && mouseX > 37 && mouseX < 83 && mouseY > -176 && mouseY < -130
+    if pressed { tap } else { held = false }
+}

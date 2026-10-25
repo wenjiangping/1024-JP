@@ -1,0 +1,27 @@
+// Fixed pool: each pickup checks and awards its own collection exactly once.
+var Slot int
+onStart => { hide }
+onMsg "clear", => { if isCloned { die } }
+onMsg "setup", => {
+    if !isCloned {
+        hide
+        for i := 0; i < 15; i++ {
+            if i % 3 == 2 { Slot = i; clone }
+        }
+    }
+}
+onMsg "render", => {
+    if isCloned {
+        setSize 0.10
+        setXYpos ItemX[Slot], ItemY[Slot]
+        if !ItemEnabled[Slot] || ItemTaken[Slot] || ItemX[Slot] < -255 || ItemX[Slot] > 255 {
+            hide
+        } else {
+            show
+            if Running && !Paused && BodyX > ItemX[Slot] - 24 && BodyX < ItemX[Slot] + 24 && PlayerFeet + 25 > ItemY[Slot] - 31 && PlayerFeet + 25 < ItemY[Slot] + 31 {
+                collectItem Slot
+                hide
+            }
+        }
+    }
+}

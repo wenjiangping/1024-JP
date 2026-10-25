@@ -1,0 +1,116 @@
+// Lita owns motion, gravity, input edges, one-way landings and animations.
+var (
+    vy float64
+    grounded bool
+    coyote float64
+    bufferedJump float64
+    jumpHeld bool
+    requestedJump bool
+    anim string
+)
+
+onMsg "requestJump", => { if !jumpHeld && Running && !Paused { requestedJump = true } }
+
+onKey KeySpace, => { if !jumpHeld && Running && !Paused { requestedJump = true } }
+onKey KeyUp, => { if !jumpHeld && Running && !Paused { requestedJump = true } }
+onKey KeyW, => { if !jumpHeld && Running && !Paused { requestedJump = true } }
+
+onMsg "setup", => {
+    setPhysicsMode NoPhysics
+    setRotationStyle LeftRight
+    setSize 0.1
+    setHeading Right
+    PlayerX = -145
+    BodyX = PlayerX + 11
+    PlayerFeet = PT[0]
+    Facing = 1
+    vy = 0
+    grounded = true
+    coyote = 0.11
+    bufferedJump = 0
+    jumpHeld = true
+    requestedJump = false
+    clearGraphicEffects
+    say ""
+    setXYpos PlayerX, PlayerFeet + 29
+    animate "Walk", true
+    anim = "Walk"
+    show
+    setLayer Front
+}
+
+onMsg "physics", => {
+    leftDown := keyPressed(KeyLeft) || keyPressed(KeyA) || UILeft
+    rightDown := keyPressed(KeyRight) || keyPressed(KeyD) || UIRight
+    move := 0
+    if leftDown && !rightDown { move = -1 }
+    if rightDown && !leftDown { move = 1 }
+    if move != 0 {
+        Facing = move
+        PlayerX += float64(move) * 118 * DT
+        if Facing == -1 { setHeading Left } else { setHeading Right }
+    }
+    if PlayerX < -200 { PlayerX = -200 }
+    if PlayerX > 185 { PlayerX = 185 }
+    BodyX = PlayerX + float64(Facing) * 11
+    down := keyPressed(KeySpace) || keyPressed(KeyUp) || keyPressed(KeyW) || UIJump || (mousePressed && mouseY > -122)
+    if requestedJump || down && !jumpHeld { bufferedJump = 0.12 }
+    requestedJump = false
+    jumpHeld = down
+    bufferedJump -= DT
+    coyote -= DT
+    if bufferedJump > 0 && coyote > 0 {
+        vy = 310
+        grounded = false
+        coyote = 0
+        bufferedJump = 0
+        println "JUMP", PlayerX, PlayerFeet
+    }
+    oldFeet := PlayerFeet
+    wasGrounded := grounded
+    vy -= 560 * DT
+    PlayerFeet += vy * DT
+    grounded = false
+    // Only a real surface can stop a fall. There is no invisible floor.
+    if vy <= 0 {
+        surface := -10000.0
+        for i := 0; i < 5; i++ {
+            if BodyX + 8 > PX[i] - PW[i] / 2 && BodyX - 8 < PX[i] + PW[i] / 2 {
+                if oldFeet >= PT[i] - 0.8 && PlayerFeet <= PT[i] && PT[i] > surface { surface = PT[i] }
+                // Grounded feet can walk up a small adjoining step. Airborne
+                // characters still land only from above; gaps never hold them up.
+                if wasGrounded && PT[i] > oldFeet && PT[i] <= oldFeet + 16 && PT[i] > surface { surface = PT[i] }
+            }
+            if HasLedge[i] && BodyX + 8 > LX[i] - LW[i] / 2 && BodyX - 8 < LX[i] + LW[i] / 2 {
+                if oldFeet >= LT[i] - 0.8 && PlayerFeet <= LT[i] && LT[i] > surface { surface = LT[i] }
+            }
+        }
+        if surface > -9000 {
+            PlayerFeet = surface
+            vy = 0
+            grounded = true
+            coyote = 0.11
+            if !wasGrounded { println "LAND", PlayerFeet }
+        }
+    }
+    setXYpos PlayerX, PlayerFeet + 29
+    nextAnim := "Walk"
+    if !grounded { nextAnim = "Jump" }
+    if nextAnim != anim {
+        animate nextAnim, true
+        anim = nextAnim
+    }
+    if PlayerFeet < -210 { finishRun "掉进林间缺口了" }
+}
+
+onMsg "finished", => {
+    animate "Fall"
+    say "再跑一趟？按 R"
+}
+
+onMsg "pauseChanged", => {
+    requestedJump = false
+    bufferedJump = 0
+    jumpHeld = true
+    if Paused { stopAnimation anim } else { animate anim, true }
+}

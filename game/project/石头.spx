@@ -1,0 +1,23 @@
+// Hazard 2 has its own drawing and body-only contact test.
+var Slot int
+onStart => { hide }
+onMsg "clear", => { if isCloned { die } }
+onMsg "setup", => {
+    if !isCloned {
+        hide
+        for i := 0; i < 5; i++ { Slot = i; clone }
+    }
+}
+onMsg "render", => {
+    if isCloned {
+        setSize 0.18
+        setXYpos HX[Slot], HY[Slot] + 9.5
+        if HazardKind[Slot] == 2 && HX[Slot] > -275 && HX[Slot] < 275 {
+            show
+
+            if Running && !Paused && BodyX + 9 > HX[Slot] - 16 && BodyX - 9 < HX[Slot] + 16 && PlayerFeet < HY[Slot] + 18 && PlayerFeet + 45 > HY[Slot] + 3 {
+                finishRun "被小石头绊住了"
+            }
+        } else { hide }
+    }
+}

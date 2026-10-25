@@ -1,0 +1,3 @@
+// Reserved original appearance. Water crystals are pooled by 水晶1.spx.
+onStart => { hide }
+onMsg "setup", => { hide }
