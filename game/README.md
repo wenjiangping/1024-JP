@@ -8,6 +8,8 @@
 
 本地恢复：先导出需要保留的修改，再通过项目菜单导入 **Go-Lita-runner-v0.5.xbp**。包内包含全部源码、图片、动画及声音。仓库同时保留历史版本，当前正式包沿用 v0.5 文件名以保持导入路径稳定，源码已经是 v0.6 增强版。项目仅保存和预览，未发布。
 
+完整 XBuilder 云端存档见 [`archive/Go-Lita-XBuilder-IdeaDash-2026-10-26.xbp`](archive/Go-Lita-XBuilder-IdeaDash-2026-10-26.xbp)。该文件是从已发布的 `En / IdeaDash` 项目直接导出的完整包，包含工程源码、所有精灵与造型、动画、声音、背景、字体和配置；演示视频见 [`media/Video-Go-Lita.mp4`](../media/Video-Go-Lita.mp4)，在线体验见 [Go Lita](https://x.qiniu.com/project/En/IdeaDash)。
+
 | 输入 | 操作 |
 |---|---|
 | ← / A，→ / D | 左右移动、转向；松开后森林继续推进 |
