@@ -110,6 +110,7 @@ func finishRun(reason string) {
     AchievementStage = 0
     InputReady = false
     broadcast "finished"
+    broadcastAndWait "settlementScore"
     println "FINISH", reason, Score, Mushrooms, Diamonds, RunTime, BodyX, PlayerFeet
 }
 func obstacle(k int, kind int, x float64, y float64) {
@@ -376,3 +377,4 @@ onStart => {
         wait 0.016
     }
 }
+

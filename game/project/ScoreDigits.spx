@@ -1,4 +1,4 @@
-// Clone slots display the current score, including zero, in HUD or settlement.
+// Clone slots display the current score in the HUD and settlement card.
 var (
     Slot int
     rendered [8]bool
@@ -10,13 +10,10 @@ onMsg "clear", => { if isCloned { die } }
 onMsg "setup", => {
     if !isCloned { hide; for i := 0; i < 8; i++ { Slot = i; clone } }
 }
+// HUD digits may change while playing. Settlement digits are handled by the
+// one-shot settlementScore message below and are never redrawn in uiTick.
 onMsg "uiTick", => {
-    if !isCloned { return }
-    // Settlement digits are a snapshot. Once rendered, leave the clones
-    // untouched so the runner does not redraw/reorder them every frame.
-    if Screen == 3 && renderedScreen == 3 && renderedScore == Score && rendered[Slot] {
-        return
-    }
+    if !isCloned || Screen == 3 { return }
     if renderedScreen != Screen || renderedScore != Score {
         for i := 0; i < 8; i++ { rendered[i] = false }
         renderedScreen = Screen
@@ -25,21 +22,35 @@ onMsg "uiTick", => {
     n := Score
     count := 1
     for n >= 10 { n /= 10; count++ }
-    if Screen == 3 && rendered[Slot] { return }
     if Screen == 0 || Slot >= count { hide; rendered[Slot] = true; return }
     n = Score
     for i := 0; i < Slot; i++ { n /= 10 }
     setCostume n % 10
-    if Screen == 3 {
-        setSize 0.6
-        setXYpos -66 + (float64(count-1)/2-float64(Slot))*30, -59
-    } else {
-        setSize 0.2
-        setXYpos -155 + (float64(count-1)/2-float64(Slot))*9, 162
-    }
+    setSize 0.2
+    setXYpos -155 + (float64(count-1)/2-float64(Slot))*9, 162
     show
     setLayer Front
     rendered[Slot] = true
 }
-onMsg "scoreFront", => { if isCloned { setLayer Front } }
+// Render the final score exactly once when the run ends.
+onMsg "settlementScore", => {
+    if !isCloned { return }
+    if renderedScreen != 3 || renderedScore != Score {
+        for i := 0; i < 8; i++ { rendered[i] = false }
+        renderedScreen = 3
+        renderedScore = Score
+    }
+    if rendered[Slot] { return }
+    n := Score
+    count := 1
+    for n >= 10 { n /= 10; count++ }
+    if Slot >= count { hide; rendered[Slot] = true; return }
+    n = Score
+    for i := 0; i < Slot; i++ { n /= 10 }
+    setCostume n % 10
+    setSize 0.6
+    setXYpos -66 + (float64(count-1)/2-float64(Slot))*30, -59
+    show
+    rendered[Slot] = true
+}
 onMsg "scoreFront", => { if isCloned { setLayer Front } }
