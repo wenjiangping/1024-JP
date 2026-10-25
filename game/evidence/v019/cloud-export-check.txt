@@ -1,0 +1,1 @@
+Cloud export audit: 39 SPX scripts byte-identical; 111 sprite costumes byte-identical by costume name. XBuilder renames resource paths and rewrites metadata/thumbnail on export.

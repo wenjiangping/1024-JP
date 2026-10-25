@@ -1,0 +1,17 @@
+var Slot int
+onStart => { hide }
+onMsg "clear", => { if isCloned { die } }
+onMsg "setup", => {
+    if !isCloned {
+        hide
+        for i := 0; i < 5; i++ { Slot = i; clone }
+    }
+}
+onMsg "render", => {
+    if isCloned {
+        s := LW[Slot] / 1328
+        setSize s
+        setXYpos LX[Slot], LT[Slot] - 150 * s
+        if HasLedge[Slot] && LX[Slot] + LW[Slot]/2 > -245 && LX[Slot] - LW[Slot]/2 < 245 { show } else { hide }
+    }
+}

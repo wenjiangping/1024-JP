@@ -1,0 +1,3 @@
+# Preserve exported asset/script bytes so the readable tree matches the XBP package.
+game/project/** -text
+*.xbp binary

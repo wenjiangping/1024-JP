@@ -1,0 +1,24 @@
+// Polling supplements fast sprite clicks; screenSince prevents click-through.
+var wasDown bool
+onStart => { hide; wasDown = true }
+onMsg "input", => {
+    if mousePressed && !wasDown && Screen != 2 { interfaceTap }
+    wasDown = mousePressed
+}
+// Explicit layer order after the world, independent of broadcast handler order.
+onMsg "uiLayers", => {
+    ScorePanel.setLayer Front
+    RankPanel.setLayer Front
+    if Screen == 0 { HomeCover.setLayer Front; StartButton.setLayer Front }
+    if Screen == 1 { Dimmer.setLayer Front; HelpPanel.setLayer Front }
+    if Screen == 3 {
+        Dimmer.setLayer Front
+        ResultPanel.setLayer Front
+        ResultLabels.setLayer Front
+        ResultRank.setLayer Front
+        ResultRetry.setLayer Front
+        HomeButton.setLayer Front
+        broadcastAndWait "scoreFront"
+    }
+    if Screen == 2 { Achievement.setLayer Front }
+}

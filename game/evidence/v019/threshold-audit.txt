@@ -1,0 +1,175 @@
+  - generic "Console panel":
+    - generic: 控制台
+    - list:
+      - generic: 20:07:18.645
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 0 蹦跶小新手 58 0.5
+      - generic: 20:07:18.693
+      - link "舞台:244":
+        - /url: javascript:;
+      - text: START 1
+      - generic: 20:07:18.694
+      - link "舞台:261":
+        - /url: javascript:;
+      - text: SCREEN HOME
+      - generic: 20:07:34.383
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 0 蹦跶小新手 58 0.5
+      - generic: 20:07:34.420
+      - link "舞台:244":
+        - /url: javascript:;
+      - text: START 2
+      - generic: 20:07:34.420
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 19 蹦跶小新手 58 0.5
+      - generic: 20:07:34.421
+      - link "舞台:277":
+        - /url: javascript:;
+      - text: QA_BELOW 19 0 蹦跶小新手
+      - generic: 20:07:34.421
+      - link "舞台:84":
+        - /url: javascript:;
+      - text: ACHIEVEMENT 1 20
+      - generic: 20:07:34.422
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 1 20 树影穿梭客 75.4 0.65
+      - generic: 20:07:34.422
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 20 20 0
+      - generic: 20:07:34.427
+      - link "舞台:283":
+        - /url: javascript:;
+      - text: QA_THRESHOLD 20 1 树影穿梭客 1 75.4 0.65
+      - generic: 20:07:53.516
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 0 蹦跶小新手 58 0.5
+      - generic: 20:07:53.625
+      - link "舞台:244":
+        - /url: javascript:;
+      - text: START 3
+      - generic: 20:07:53.626
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 1 39 树影穿梭客 75.4 0.65
+      - generic: 20:07:53.626
+      - link "舞台:277":
+        - /url: javascript:;
+      - text: QA_BELOW 39 1 树影穿梭客
+      - generic: 20:07:53.627
+      - link "舞台:84":
+        - /url: javascript:;
+      - text: ACHIEVEMENT 2 40
+      - generic: 20:07:53.627
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 2 40 灌木飞毛腿 98.02000000000001 0.8450000000000001
+      - generic: 20:07:53.628
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 40 40 0
+      - generic: 20:07:53.630
+      - link "舞台:283":
+        - /url: javascript:;
+      - text: QA_THRESHOLD 40 2 灌木飞毛腿 2 98.02000000000001 0.8450000000000001
+      - generic: 20:08:04.377
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 0 蹦跶小新手 58 0.5
+      - generic: 20:08:04.412
+      - link "舞台:244":
+        - /url: javascript:;
+      - text: START 4
+      - generic: 20:08:04.413
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 2 59 灌木飞毛腿 98.02000000000001 0.8450000000000001
+      - generic: 20:08:04.413
+      - link "舞台:277":
+        - /url: javascript:;
+      - text: QA_BELOW 59 2 灌木飞毛腿
+      - generic: 20:08:04.414
+      - link "舞台:84":
+        - /url: javascript:;
+      - text: ACHIEVEMENT 3 60
+      - generic: 20:08:04.414
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 3 60 林间寻路家 127.42600000000003 1.0985000000000003
+      - generic: 20:08:04.415
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 60 60 0
+      - generic: 20:08:04.419
+      - link "舞台:283":
+        - /url: javascript:;
+      - text: QA_THRESHOLD 60 3 林间寻路家 3 127.42600000000003 1.0985000000000003
+      - generic: 20:08:12.500
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 0 蹦跶小新手 58 0.5
+      - generic: 20:08:12.537
+      - link "舞台:244":
+        - /url: javascript:;
+      - text: START 5
+      - generic: 20:08:12.538
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 3 79 林间寻路家 127.42600000000003 1.0985000000000003
+      - generic: 20:08:12.539
+      - link "舞台:277":
+        - /url: javascript:;
+      - text: QA_BELOW 79 3 林间寻路家
+      - generic: 20:08:12.539
+      - link "舞台:84":
+        - /url: javascript:;
+      - text: ACHIEVEMENT 4 80
+      - generic: 20:08:12.540
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 4 80 风之探险家 165.65380000000005 1.4280500000000005
+      - generic: 20:08:12.540
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 80 80 0
+      - generic: 20:08:12.543
+      - link "舞台:283":
+        - /url: javascript:;
+      - text: QA_THRESHOLD 80 4 风之探险家 4 165.65380000000005 1.4280500000000005
+      - generic: 20:08:28.734
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 0 蹦跶小新手 58 0.5
+      - generic: 20:08:28.764
+      - link "舞台:244":
+        - /url: javascript:;
+      - text: START 6
+      - generic: 20:08:28.765
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 4 99 风之探险家 165.65380000000005 1.4280500000000005
+      - generic: 20:08:28.766
+      - link "舞台:277":
+        - /url: javascript:;
+      - text: QA_BELOW 99 4 风之探险家
+      - generic: 20:08:28.766
+      - link "舞台:84":
+        - /url: javascript:;
+      - text: ACHIEVEMENT 5 100
+      - generic: 20:08:28.767
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 5 100 森林守护者 215.3499400000001 1.8564650000000007
+      - generic: 20:08:28.767
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 100 100 0
+      - generic: 20:08:28.769
+      - link "舞台:283":
+        - /url: javascript:;
+      - text: QA_THRESHOLD 100 5 森林守护者 5 215.3499400000001 1.8564650000000007

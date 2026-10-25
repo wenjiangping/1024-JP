@@ -1,0 +1,8 @@
+// Surface slot 1; collision uses this exact width and top in Lita.spx.
+onMsg "setup", => { setPhysicsMode NoPhysics }
+onMsg "render", => {
+    s := PW[1] / 1328
+    setSize s
+    setXYpos PX[1], PT[1] - 150 * s
+    if PX[1] + PW[1]/2 < -245 || PX[1] - PW[1]/2 > 245 { hide } else { show }
+}

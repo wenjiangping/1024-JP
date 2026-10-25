@@ -1,0 +1,29 @@
+// Fire is dangerous; visual animation and damage belong to this sprite.
+var Slot int
+onStart => { hide }
+onMsg "clear", => { if isCloned { stopAnimation "火焰"; die } }
+onMsg "setup", => {
+    if !isCloned {
+        hide
+        for i := 0; i < 10; i++ { Slot = i; clone }
+    }
+}
+onMsg "pauseChanged", => {
+    if isCloned { if Paused { stopAnimation "火焰" } else { animate "火焰", true } }
+}
+onMsg "danger", => {
+    if isCloned && OKind[Slot] == 4 && Running && !Paused {
+        if BodyX + 9 > OX[Slot]-OW[Slot] && BodyX-9 < OX[Slot]+OW[Slot] && PlayerFeet < OY[Slot]+OH[Slot] && PlayerFeet+43 > OY[Slot]+3 {
+            finishRun "碰到火焰了"
+        }
+    }
+}
+onMsg "render", => {
+    if isCloned {
+        setSize 0.32
+        setXYpos OX[Slot], OY[Slot]+28.5
+        if OKind[Slot] == 4 && OX[Slot] > -280 && OX[Slot] < 280 {
+            if !visible { show; animate "火焰", true }
+        } else { hide }
+    }
+}

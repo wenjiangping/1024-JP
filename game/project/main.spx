@@ -1,0 +1,398 @@
+// Go Lita v0.6: six score stages, screen state, collection and fair route scheduling.
+var (
+    Screen int // 0 home, 1 instructions, 2 run, 3 settlement
+    InputReady bool
+    WantsHelp bool
+    WantsPlay bool
+    WantsHome bool
+    DifficultyFactor float64
+    ObstacleDensity float64
+    obstacleBudget float64
+    AchievementStage int
+    AchievementTime float64
+    screenSince float64
+    Score int
+    FinalScore int
+    DifficultyStage int
+    Mushrooms int
+    Diamonds int
+    Rank string
+    EndReason string
+    BestScore int
+    NewRecord bool
+    Running bool
+    Paused bool
+    DT float64
+    ScrollDX float64
+    Speed float64
+    RunTime float64
+    Distance float64
+    PX [5]float64
+    PW [5]float64
+    PT [5]float64
+    LX [5]float64
+    LT [5]float64
+    LW [5]float64
+    HasLedge [5]bool
+    // Two slots per chunk: 1 stone, 2 stump, 3 rock pile (solid);
+    // 4 fire, 5 bomb (dangerous). OW is the collision half-width.
+    OX [10]float64
+    OY [10]float64
+    OKind [10]int
+    OW [10]float64
+    OH [10]float64
+    ItemX [15]float64
+    ItemY [15]float64
+    ItemTaken [15]bool
+    ItemEnabled [15]bool
+    PlayerX float64
+    PlayerFeet float64
+    BodyX float64
+    Facing int
+    UILeft bool
+    UIRight bool
+    UIJump bool
+    WantsRetry bool
+    WantsPause bool
+    epoch int
+    previousPattern int
+    previousGap bool
+    leftPulseFrames int
+    rightPulseFrames int
+    previousTop float64
+    challengeStreak int
+    retryHeld bool
+    pauseHeld bool
+    lastSpeedStep int
+    BackgroundPlaying bool
+    BackgroundStartedAt float64
+)
+
+func updateRank() {
+    Rank = "蹦跶小新手"
+    if DifficultyStage == 1 { Rank = "树影穿梭客" }
+    if DifficultyStage == 2 { Rank = "灌木飞毛腿" }
+    if DifficultyStage == 3 { Rank = "林间寻路家" }
+    if DifficultyStage == 4 { Rank = "风之探险家" }
+    if DifficultyStage == 5 { Rank = "森林守护者" }
+}
+func updateDifficulty() {
+    stage := Score / 20
+    if stage > 5 { stage = 5 }
+    if stage != DifficultyStage {
+        if stage > DifficultyStage && DifficultyStage >= 0 {
+            AchievementStage = stage
+            AchievementTime = 0
+            println "ACHIEVEMENT", stage, Score
+        }
+        DifficultyStage = stage
+        DifficultyFactor = 1
+        for j := 0; j < stage; j++ { DifficultyFactor *= 1.3 }
+        Speed = 58 * DifficultyFactor
+        ObstacleDensity = 1.0 * DifficultyFactor
+        obstacleBudget = 0
+        updateRank
+        println "DIFFICULTY", DifficultyStage, Score, Rank, Speed, ObstacleDensity
+    }
+}
+
+func collectItem(i int) {
+    if !Running || Paused || ItemTaken[i] || !ItemEnabled[i] { return }
+    ItemTaken[i] = true
+    if i % 3 == 2 { Diamonds++; Score += 3 } else { Mushrooms++; Score++ }
+    updateDifficulty
+    broadcast "pickupSound"
+    println "HARVEST", Score, Mushrooms, Diamonds
+}
+func finishRun(reason string) {
+    if !Running { return }
+    Running = false
+    FinalScore = Score
+    EndReason = reason
+    NewRecord = Score > BestScore
+    if NewRecord { BestScore = Score }
+    Screen = 3
+    screenSince = timer
+    AchievementStage = 0
+    InputReady = false
+    broadcast "finished"
+    broadcastAndWait "settlementScore"
+    println "FINISH", reason, Score, Mushrooms, Diamonds, RunTime, BodyX, PlayerFeet, "BEST", BestScore, "NEW", NewRecord
+}
+func obstacle(k int, kind int, x float64, y float64) {
+    OKind[k] = kind
+    OX[k] = x
+    OY[k] = y
+    OW[k] = 20
+    OH[k] = 19
+    if kind == 2 { OW[k] = 17; OH[k] = 29 }
+    if kind == 3 { OW[k] = 22; OH[k] = 37 }
+    if kind == 4 { OW[k] = 6; OH[k] = 29 }
+    if kind == 5 { OW[k] = 13; OH[k] = 31 }
+}
+
+func makeChunk(i int, left float64, opening bool) {
+    pattern := int(rand(0, 999)) % 10
+    if pattern == previousPattern { pattern = (pattern + 1) % 10 }
+    progress := Distance + left
+    if progress < 1200 && !opening { pattern = 1 }
+    if challengeStreak >= 2 { pattern = 0 }
+    if opening { pattern = 0 }
+    width := rand(290.0, 330.0)
+    gap := 0.0
+    top := -102.0
+    if progress > 1200 { top += float64(int(rand(0, 299)) % 3 - 1) * 8 }
+    if pattern == 7 && progress > 1400 { top = -74 }
+    if pattern == 4 && progress > 1600 && !previousGap {
+        gap = rand(36.0, 48.0)
+        top = previousTop
+        // Leave the takeoff and landing clear around every gap.
+        for j := 0; j < 10; j++ {
+            if OX[j] > left - 140 && OX[j] < left + 2 { OKind[j] = 0 }
+        }
+    } else if pattern == 4 { pattern = 0 }
+    PX[i] = left + gap + width / 2
+    PW[i] = width
+    PT[i] = top
+    HasLedge[i] = !opening && (pattern == 2 || pattern == 9) && gap == 0 && !previousGap
+    LX[i] = PX[i] + rand(-14.0, 14.0)
+    // Lower route keeps at least 50px headroom; jump apex is about 100px.
+    LT[i] = top + 84
+    LW[i] = rand(96.0, 112.0)
+    a := i * 2
+    OKind[a] = 0
+    OKind[a+1] = 0
+    if !opening && !previousGap && gap == 0 && pattern != 0 {
+        // Fractional quotas preserve the exact 1.3 multiplier on eligible routes.
+        obstacleBudget += ObstacleDensity
+        count := int(obstacleBudget)
+        obstacleBudget -= float64(count)
+        for j := 0; j < count; j++ {
+            kind := 1 + int(rand(0, 299)) % 3
+            if progress > 1100 && (pattern == 5 || pattern == 6 || pattern == 9) {
+                if pattern == 6 { kind = 5 } else { kind = 4 }
+                // Preserve a clear jump corridor on routes with two obstacles.
+                if j == 0 && count == 2 { kind = 1 + int(rand(0, 299)) % 3 }
+            }
+            x := PX[i]
+            if count == 2 {
+                if j == 0 { x = left + 78 } else { x = left + width - 60 }
+            }
+            obstacle a+j, kind, x, top
+        }
+        println "DENSITY", DifficultyStage, ObstacleDensity, count, obstacleBudget
+    }
+    for j := 0; j < 3; j++ {
+        k := i * 3 + j
+        ItemTaken[k] = false
+        ItemEnabled[k] = true
+        ItemX[k] = PX[i] - width/2 + 30
+        ItemY[k] = top + 13
+        if j == 1 { ItemX[k] = PX[i] + width/2 - 28 }
+        if j == 2 {
+            ItemX[k] = PX[i]
+            ItemY[k] = top + 65
+            ItemEnabled[k] = !opening || int(rand(0, 199)) % 2 == 0
+            if HasLedge[i] { ItemX[k] = LX[i]; ItemY[k] = LT[i] + 18 }
+        }
+        // Keep every pickup readable. If a route puts an obstacle over the
+        // default line, lift the pickup into the jump arc instead of hiding it
+        // behind the art or making it impossible to collect safely.
+        if !HasLedge[i] {
+            for q := a; q < a+2; q++ {
+                if OKind[q] > 0 && ItemX[k] > OX[q]-OW[q]-25 && ItemX[k] < OX[q]+OW[q]+25 {
+                    ItemY[k] = top + 52
+                }
+            }
+        }
+    }
+    if OKind[a] == 0 && OKind[a+1] == 0 && gap == 0 && !HasLedge[i] { challengeStreak = 0 } else { challengeStreak++ }
+    previousPattern = pattern
+    previousGap = gap > 0
+    previousTop = top
+    if !opening { println "CHUNK", i, pattern, gap, width, top, OKind[a], OKind[a+1] }
+}
+func resetRun() {
+    broadcastAndWait "clear"
+    stopAllSounds
+    BackgroundPlaying = false
+    BackgroundStartedAt = 0
+    epoch++
+    Score = 0
+    Mushrooms = 0
+    Diamonds = 0
+    RunTime = 0
+    Distance = 0
+    Screen = 2
+    InputReady = false
+    AchievementStage = 0
+    AchievementTime = 0
+    screenSince = timer
+    WantsHelp = false
+    WantsPlay = false
+    WantsHome = false
+    Speed = 58
+    DifficultyStage = -1
+    updateDifficulty
+    Running = true
+    Paused = false
+    EndReason = ""
+    NewRecord = false
+    WantsRetry = false
+    WantsPause = false
+    leftPulseFrames = 0
+    rightPulseFrames = 0
+    UILeft = false
+    UIRight = false
+    UIJump = false
+    lastSpeedStep = -1
+    previousGap = false
+    previousPattern = -1
+    previousTop = -102
+    challengeStreak = 0
+    updateRank
+    left := -300.0
+    for i := 0; i < 5; i++ {
+        makeChunk i, left, i < 3
+        left = PX[i] + PW[i] / 2
+    }
+    broadcastAndWait "setup"
+    broadcastAndWait "render"
+    Lita.setLayer Front
+    println "START", epoch
+}
+func interfaceTap() {
+    // One press cannot open the instructions and dismiss them as well.
+    if timer - screenSince < 0.25 { return }
+    if Screen == 0 && mouseX > -73 && mouseX < 73 && mouseY > -124 && mouseY < -72 { WantsHelp = true }
+    if Screen == 1 && mouseX > -220 && mouseX < 220 && mouseY > -134 && mouseY < 134 { WantsPlay = true }
+    if Screen == 3 && mouseY > -158 && mouseY < -118 {
+        if mouseX > -117 && mouseX < -7 { WantsRetry = true }
+        if mouseX > 7 && mouseX < 117 { WantsHome = true }
+    }
+}
+func home() {
+    resetRun
+    Running = false
+    Screen = 0
+    screenSince = timer
+    println "SCREEN HOME"
+}
+func instructions() {
+    resetRun
+    Running = false
+    Screen = 1
+    screenSince = timer
+    println "SCREEN HELP"
+}
+onClick => {
+    if Screen != 2 { interfaceTap; return }
+    if !InputReady { return }
+    if mouseY > -122 { broadcast "requestJump" } else { broadcast "pointerTap" }
+}
+onKey KeyEnter, => {
+    if timer-screenSince > 0.25 {
+        if Screen == 0 { WantsHelp = true }
+        if Screen == 1 { WantsPlay = true }
+        if Screen == 3 { WantsRetry = true }
+    }
+}
+onKey KeySpace, => {
+    if timer-screenSince > 0.25 {
+        if Screen == 0 { WantsHelp = true }
+        if Screen == 1 { WantsPlay = true }
+    }
+}
+onKey KeyLeft, => { if Screen == 2 && !Paused && InputReady { leftPulseFrames = 12; rightPulseFrames = 0 } }
+onKey KeyA, => { if Screen == 2 && !Paused && InputReady { leftPulseFrames = 12; rightPulseFrames = 0 } }
+onKey KeyRight, => { if Screen == 2 && !Paused && InputReady { rightPulseFrames = 12; leftPulseFrames = 0 } }
+onKey KeyD, => { if Screen == 2 && !Paused && InputReady { rightPulseFrames = 12; leftPulseFrames = 0 } }
+onKey KeyR, => { if Screen >= 2 && !retryHeld { WantsRetry = true } }
+onKey KeyP, => { if Screen == 2 && !pauseHeld { WantsPause = true } }
+onKey KeyEscape, => { if Screen == 2 && !pauseHeld { WantsPause = true } }
+onStart => {
+    setVolume 25
+    resetTimer
+    wait 0.05
+    home
+    lastTime := timer
+    forever => {
+        now := timer
+        DT = now - lastTime
+        lastTime = now
+        if DT > 0.04 { DT = 0.04 }
+        broadcastAndWait "input"
+        retryDown := keyPressed(KeyR)
+        pauseDown := keyPressed(KeyP)
+        if Screen >= 2 && retryDown && !retryHeld { WantsRetry = true }
+        if Screen == 2 && pauseDown && !pauseHeld { WantsPause = true }
+        if WantsHome { home }
+        if WantsHelp { instructions }
+        if WantsPlay { resetRun; println "SCREEN PLAY" }
+        if WantsRetry { resetRun; println "SCREEN RETRY" }
+        // The title and instructions share a looping background track. Gameplay and settlement are silent.
+        if Screen == 0 || Screen == 1 {
+            if !BackgroundPlaying {
+                play "背景音乐"
+                BackgroundPlaying = true
+                BackgroundStartedAt = now
+            } else if now - BackgroundStartedAt >= 74.0 {
+                stopAllSounds
+                play "背景音乐"
+                BackgroundStartedAt = now
+            }
+        } else if BackgroundPlaying {
+            stopAllSounds
+            BackgroundPlaying = false
+        }
+        if Screen == 2 && !InputReady && !mousePressed && !keyPressed(KeySpace) && !keyPressed(KeyUp) && !keyPressed(KeyW) {
+            InputReady = true
+        }
+        if WantsPause && Running {
+            Paused = !Paused
+            leftPulseFrames = 0
+            rightPulseFrames = 0
+            WantsPause = false
+            broadcastAndWait "pauseChanged"
+            println "PAUSE", Paused, Score, PlayerX, PlayerFeet, RunTime
+        }
+        retryHeld = retryDown
+        pauseHeld = pauseDown
+        if Running && !Paused {
+            RunTime += DT
+            if AchievementStage > 0 {
+                AchievementTime += DT
+                if AchievementTime >= 1.95 {
+                    println "ACHIEVEMENT_END", AchievementStage, AchievementTime
+                    AchievementStage = 0
+                }
+            }
+            if DifficultyStage != lastSpeedStep {
+                lastSpeedStep = DifficultyStage
+                println "PACE", DifficultyStage, Speed, Score
+            }
+            ScrollDX = Speed * DT
+            Distance += ScrollDX
+            for i := 0; i < 5; i++ { PX[i] -= ScrollDX; LX[i] -= ScrollDX }
+            for i := 0; i < 10; i++ { OX[i] -= ScrollDX }
+            for i := 0; i < 15; i++ { ItemX[i] -= ScrollDX }
+            for i := 0; i < 5; i++ {
+                if PX[i] + PW[i] / 2 < -305 {
+                    right := -305.0
+                    for j := 0; j < 5; j++ {
+                        if PX[j] + PW[j] / 2 > right { right = PX[j] + PW[j] / 2 }
+                    }
+                    makeChunk i, right, false
+                }
+            }
+            broadcastAndWait "physics"
+            // Resolve danger before pickup; no score on the ending frame.
+            broadcastAndWait "danger"
+            broadcastAndWait "render"
+        }
+        Lita.setLayer Front
+        broadcastAndWait "uiTick"
+        broadcastAndWait "uiLayers"
+        wait 0.016
+    }
+}

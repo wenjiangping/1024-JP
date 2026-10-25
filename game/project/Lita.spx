@@ -1,0 +1,140 @@
+// Lita owns input, gravity, solid collision and the two boundary endings.
+var (
+    vy float64
+    grounded bool
+    wasGrounded bool
+    oldFeet float64
+    oldBody float64
+    coyote float64
+    bufferedJump float64
+    jumpHeld bool
+    requestedJump bool
+    anim string
+    pushed bool
+)
+func solid(cx float64, hw float64, bottom float64, top float64, step bool) {
+    if BodyX + 9 <= cx - hw || BodyX - 9 >= cx + hw { return }
+    if vy <= 0 && PlayerFeet <= top && (oldFeet >= top - 0.8 || step && wasGrounded && top > oldFeet && top <= oldFeet + 8) {
+        PlayerFeet = top
+        vy = 0
+        grounded = true
+        coyote = 0.11
+        return
+    }
+    if PlayerFeet >= top - 0.6 || PlayerFeet + 43 <= bottom + 0.6 { return }
+    if vy > 0 && oldFeet + 43 <= bottom + 1 {
+        PlayerFeet = bottom - 43
+        vy = 0
+        return
+    }
+    if oldBody <= cx + ScrollDX {
+        BodyX = cx - hw - 9
+        pushed = true
+    } else { BodyX = cx + hw + 9 }
+    PlayerX = BodyX - float64(Facing) * 11
+}
+
+onMsg "requestJump", => { if !jumpHeld && Running && !Paused && InputReady { requestedJump = true } }
+onKey KeySpace, => { if !jumpHeld && Running && !Paused && InputReady { requestedJump = true } }
+onKey KeyUp, => { if !jumpHeld && Running && !Paused && InputReady { requestedJump = true } }
+onKey KeyW, => { if !jumpHeld && Running && !Paused && InputReady { requestedJump = true } }
+onMsg "setup", => {
+    setPhysicsMode KinematicPhysics
+    setRotationStyle LeftRight
+    setSize 0.1
+    setHeading Right
+    PlayerX = -145
+    BodyX = PlayerX + 11
+    PlayerFeet = PT[0]
+    Facing = 1
+    vy = 0
+    grounded = true
+    coyote = 0.11
+    bufferedJump = 0
+    // New runs must not discard their first key event.
+    jumpHeld = false
+    requestedJump = false
+    pushed = false
+    clearGraphicEffects
+    say ""
+    setXYpos PlayerX, PlayerFeet + 29
+    show
+    animate "Walk", true
+    anim = "Walk"
+    setLayer Front
+}
+onMsg "physics", => {
+    oldBody = BodyX
+    oldFeet = PlayerFeet
+    wasGrounded = grounded
+    wasPushed := pushed
+    pushed = false
+    leftDown := keyPressed(KeyLeft) || keyPressed(KeyA) || UILeft || leftPulseFrames > 0
+    rightDown := keyPressed(KeyRight) || keyPressed(KeyD) || UIRight || rightPulseFrames > 0
+    if !InputReady { leftDown = false; rightDown = false }
+    move := 0
+    if leftDown && !rightDown { move = -1 }
+    if rightDown && !leftDown { move = 1 }
+    if leftPulseFrames > 0 { leftPulseFrames-- }
+    if rightPulseFrames > 0 { rightPulseFrames-- }
+    // Flip the tail around a stable collision body.
+    if move != 0 {
+        Facing = move
+        BodyX += float64(move) * 118 * DT
+        if Facing == -1 { setHeading Left } else { setHeading Right }
+    }
+    // Voluntary movement stays inside. Solid push is allowed past the edge.
+    if move < 0 && BodyX < -202 {
+        if oldBody >= -202 { BodyX = -202 } else { BodyX = oldBody }
+    }
+    if BodyX > 196 { BodyX = 196 }
+    PlayerX = BodyX - float64(Facing) * 11
+    down := keyPressed(KeySpace) || keyPressed(KeyUp) || keyPressed(KeyW) || UIJump || (mousePressed && mouseY > -122)
+    if !InputReady { down = false; requestedJump = false }
+    if requestedJump || down && !jumpHeld { bufferedJump = 0.12 }
+    requestedJump = false
+    jumpHeld = down
+    bufferedJump -= DT
+    coyote -= DT
+    if bufferedJump > 0 && coyote > 0 {
+        vy = 335
+        grounded = false
+        wasGrounded = false
+        coyote = 0
+        bufferedJump = 0
+        println "JUMP", BodyX, PlayerFeet
+    }
+    vy -= 560 * DT
+    PlayerFeet += vy * DT
+    grounded = false
+    for i := 0; i < 5; i++ {
+        solid PX[i], PW[i]/2, -280, PT[i], true
+        if HasLedge[i] { solid LX[i], LW[i]/2, LT[i] - 366 * LW[i]/1328, LT[i], false }
+    }
+    for i := 0; i < 10; i++ {
+        if OKind[i] >= 1 && OKind[i] <= 3 { solid OX[i], OW[i], OY[i], OY[i]+OH[i], false }
+    }
+    if grounded && !wasGrounded { println "LAND", PlayerFeet }
+    if pushed && !wasPushed { println "BLOCK", BodyX, PlayerFeet }
+    setXYpos PlayerX, PlayerFeet + 29
+    nextAnim := "Walk"
+    if !grounded { nextAnim = "Jump" }
+    if nextAnim != anim { animate nextAnim, true; anim = nextAnim }
+    if BodyX + 9 < -240 { finishRun "被障碍挤出小径了" }
+    if PlayerFeet + 43 < -180 { finishRun "掉进林间缺口了" }
+}
+onMsg "pickupSound", => { play "获得宝石" }
+onMsg "finished", => {
+    animate "Fall"
+    if NewRecord { say "新纪录！" }
+    if !NewRecord && EndReason == "碰到火焰了" { say "小心火焰！" }
+    if !NewRecord && EndReason == "碰到炸弹了" { say "躲开炸弹！" }
+    if !NewRecord && EndReason == "掉进林间缺口了" { say "注意脚下！" }
+    if !NewRecord && EndReason == "被障碍挤出小径了" { say "别被挤出小径！" }
+}
+onMsg "pauseChanged", => {
+    requestedJump = false
+    bufferedJump = 0
+    jumpHeld = false
+    if Paused { stopAnimation anim; say "暂停 · P 继续" } else { animate anim, true; say "" }
+}

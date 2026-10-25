@@ -1,0 +1,50 @@
+// Score digits. Live HUD refreshes; settlement digits draw once per slot.
+var (
+    Slot int
+    settlementDrawn [8]bool
+)
+onStart => {
+    hide
+    for i := 0; i < 8; i++ { settlementDrawn[i] = false }
+}
+onMsg "clear", => { if isCloned { die } }
+onMsg "setup", => {
+    if !isCloned {
+        hide
+        for i := 0; i < 8; i++ { settlementDrawn[i] = false }
+        for i := 0; i < 8; i++ {
+            Slot = i
+            clone
+        }
+    }
+}
+onMsg "uiTick", => {
+    if !isCloned { return }
+    n := Score
+    count := 1
+    for n >= 10 { n /= 10; count++ }
+    if Screen == 0 || Screen == 2 || Slot >= count {
+        hide
+        return
+    }
+    if Screen == 3 {
+        if settlementDrawn[Slot] { return }
+        n = Score
+        for i := 0; i < Slot; i++ { n /= 10 }
+        setCostume n % 10
+        setSize 0.6
+        setXYpos -66 + (float64(count-1)/2-float64(Slot))*30, -59
+        show
+        setLayer Front
+        settlementDrawn[Slot] = true
+        return
+    }
+    n = Score
+    for i := 0; i < Slot; i++ { n /= 10 }
+    setCostume n % 10
+    setSize 0.2
+    setXYpos -155 + (float64(count-1)/2-float64(Slot))*9, 162
+    show
+    setLayer Front
+}
+onMsg "scoreFront", => { if isCloned { setLayer Front } }

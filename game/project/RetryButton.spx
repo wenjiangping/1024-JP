@@ -1,0 +1,14 @@
+// User-supplied green control, with pointer bounds matching its visible 42px box.
+var held bool
+onMsg "setup", => { held = true }
+onMsg "uiTick", => {
+    setXYpos 175, -156
+    setSize 0.21
+    if Screen == 2 { show; setLayer Front } else { hide }
+}
+onMsg "input", => {
+    down := Screen == 2 && mousePressed && mouseX > 154 && mouseX < 196 && mouseY > -177 && mouseY < -135
+    if down && !held { WantsRetry = true }
+    held = down
+}
+onClick => { if Screen == 2 && !held { WantsRetry = true; held = true } }

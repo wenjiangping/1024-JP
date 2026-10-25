@@ -1,0 +1,17 @@
+// Solid obstacle 3: never ends a run on touch. Geometry is in OW/OH.
+var Slot int
+onStart => { hide }
+onMsg "clear", => { if isCloned { die } }
+onMsg "setup", => {
+    if !isCloned {
+        hide
+        for i := 0; i < 10; i++ { Slot = i; clone }
+    }
+}
+onMsg "render", => {
+    if isCloned {
+        setSize 0.28
+        setXYpos OX[Slot], OY[Slot] + 24.5
+        if OKind[Slot] == 3 && OX[Slot] > -290 && OX[Slot] < 290 { show } else { hide }
+    }
+}

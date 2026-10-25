@@ -1,0 +1,12 @@
+// One picture per earned stage; no pointer handler, so play stays responsive.
+onStart => { hide }
+onMsg "uiTick", => {
+    if Screen != 2 || AchievementStage < 1 { hide; return }
+    setCostume AchievementStage-1
+    setXYpos 0, 72
+    setSize 0.4375
+    clearGraphicEffects
+    if AchievementTime > 1.6 { setGraphicEffect GhostEffect, (AchievementTime-1.6)/0.35*100 }
+    show
+    setLayer Front
+}

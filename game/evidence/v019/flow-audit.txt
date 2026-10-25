@@ -1,0 +1,175 @@
+  - generic "Console panel":
+    - generic: 控制台
+    - list:
+      - generic: 20:10:27.808
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 0 蹦跶小新手 58 0.5
+      - generic: 20:10:27.853
+      - link "舞台:244":
+        - /url: javascript:;
+      - text: START 1
+      - generic: 20:10:27.854
+      - link "舞台:261":
+        - /url: javascript:;
+      - text: SCREEN HOME
+      - generic: 20:10:57.615
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 0 蹦跶小新手 58 0.5
+      - generic: 20:10:57.645
+      - link "舞台:244":
+        - /url: javascript:;
+      - text: START 2
+      - generic: 20:10:57.646
+      - link "舞台:84":
+        - /url: javascript:;
+      - text: ACHIEVEMENT 5 126
+      - generic: 20:10:57.646
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 5 126 森林守护者 215.3499400000001 1.8564650000000007
+      - generic: 20:10:57.647
+      - link "舞台:114":
+        - /url: javascript:;
+      - text: FINISH QA settlement 126 126 120 2 0 -134 -102
+      - generic: 20:11:44.173
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 0 蹦跶小新手 58 0.5
+      - generic: 20:11:44.207
+      - link "舞台:244":
+        - /url: javascript:;
+      - text: START 3
+      - generic: 20:11:44.208
+      - link "舞台:114":
+        - /url: javascript:;
+      - text: FINISH QA settlement zero 0 0 0 0 -134 -102
+      - generic: 20:12:04.772
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 0 蹦跶小新手 58 0.5
+      - generic: 20:12:04.803
+      - link "舞台:244":
+        - /url: javascript:;
+      - text: START 4
+      - generic: 20:12:04.804
+      - link "舞台:374":
+        - /url: javascript:;
+      - text: SCREEN RETRY
+      - generic: 20:12:04.804
+      - link "舞台:399":
+        - /url: javascript:;
+      - text: PACE 0 58 0
+      - generic: 20:12:06.521
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 1 1 0
+      - generic: 20:12:07.595
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 2 2 0
+      - generic: 20:12:12.299
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 3 3 0
+      - generic: 20:12:13.294
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 4 4 0
+      - generic: 20:12:17.632
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 5 5 0
+      - generic: 20:12:18.632
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 6 6 0
+      - generic: 20:12:23.535
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 7 7 0
+      - generic: 20:12:24.530
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 8 8 0
+      - generic: 20:12:26.614
+      - link "Lita:118":
+        - /url: javascript:;
+      - text: BLOCK -134.50400000000303 -102
+      - generic: 20:12:28.617
+      - link "舞台:114":
+        - /url: javascript:;
+      - text: FINISH 被障碍挤出小径了 8 8 0 22.637000000000008 -250.44600000000275 -102
+      - generic: 20:12:30.590
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 0 蹦跶小新手 58 0.5
+      - generic: 20:12:30.622
+      - link "舞台:244":
+        - /url: javascript:;
+      - text: START 5
+      - generic: 20:12:30.622
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 0 19 蹦跶小新手 58 0.5
+      - generic: 20:12:30.623
+      - link "舞台:277":
+        - /url: javascript:;
+      - text: QA_BELOW 19 0 蹦跶小新手
+      - generic: 20:12:30.623
+      - link "舞台:84":
+        - /url: javascript:;
+      - text: ACHIEVEMENT 1 20
+      - generic: 20:12:30.624
+      - link "舞台:93":
+        - /url: javascript:;
+      - text: DIFFICULTY 1 20 树影穿梭客 75.4 0.65
+      - generic: 20:12:30.625
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 20 20 0
+      - generic: 20:12:30.629
+      - link "舞台:283":
+        - /url: javascript:;
+      - text: QA_THRESHOLD 20 1 树影穿梭客 1 75.4 0.65
+      - generic: 20:12:56.259
+      - link "舞台:384":
+        - /url: javascript:;
+      - text: PAUSE false 20 -145 -102 0
+      - generic: 20:12:56.260
+      - link "舞台:399":
+        - /url: javascript:;
+      - text: PACE 1 75.4 20
+      - generic: 20:12:57.898
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 21 21 0
+      - generic: 20:12:58.414
+      - link "舞台:393":
+        - /url: javascript:;
+      - text: ACHIEVEMENT_END 1 1.9610000000000083
+      - generic: 20:12:58.667
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 22 22 0
+      - generic: 20:13:02.433
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 23 23 0
+      - generic: 20:13:03.202
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 24 24 0
+      - generic: 20:13:06.581
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 25 25 0
+      - generic: 20:13:07.450
+      - link "舞台:103":
+        - /url: javascript:;
+      - text: HARVEST 26 26 0
+      - generic: 20:13:09.893
+      - link "舞台:384":
+        - /url: javascript:;
+      - text: PAUSE true 26 -145 -102 13.00699999999999

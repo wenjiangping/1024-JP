@@ -1,0 +1,6 @@
+onStart => { hide }
+onMsg "uiTick", => {
+    setXYpos -178, 162
+    setSize 0.5
+    if Screen == 0 || Screen == 2 { hide } else { show; setLayer Front }
+}

@@ -1,0 +1,7 @@
+onStart => { hide }
+onMsg "uiTick", => {
+    setXYpos 0, 0
+    setSize 0.5
+    if Screen == 1 { show; setLayer Front } else { hide }
+}
+onClick => { interfaceTap }
