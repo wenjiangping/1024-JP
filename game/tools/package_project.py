@@ -6,7 +6,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 GAME = Path(__file__).resolve().parents[1]
 PROJECT = GAME / "project"
-PACKAGE = GAME / "Go-Lita-runner-v0.2.xbp"
+PACKAGE = GAME / "Go-Lita-runner-v0.3.xbp"
 
 
 def read_json(path):
@@ -16,6 +16,10 @@ def read_json(path):
 def validate_project():
     stage = read_json(PROJECT / "assets/index.json")
     assert stage["run"] == {"width": 480, "height": 360}, "Expected 4:3 stage"
+    assert all(not isinstance(z, dict) or z.get("val") != "Hint"
+               for z in stage["zorder"]), "Removed Hint monitor reappeared"
+    assert "QAScenario" not in (PROJECT / "main.spx").read_text(encoding="utf-8"), \
+        "Temporary playtest fixture must not ship"
     ids, names = [], []
 
     def require_resource(directory, relative):
@@ -38,9 +42,14 @@ def validate_project():
         for animation in config.get("fAnimations", {}).values():
             assert animation["frameFrom"] in costumes
             assert animation["frameTo"] in costumes
+    sound_ids = []
     for directory in (PROJECT / "assets/sounds").iterdir():
         if directory.is_dir():
-            require_resource(directory, read_json(directory / "index.json")["path"])
+            config = read_json(directory / "index.json")
+            require_resource(directory, config["path"])
+            sound_ids.append(config["builder_id"])
+    assert len(sound_ids) == len(set(sound_ids)), "Duplicate sound IDs"
+    assert set(sound_ids) == set(stage["builder_soundOrder"]), "Sound order differs from resources"
     assert len(ids) == len(set(ids)), "Duplicate sprite IDs"
     assert set(ids) == set(stage["builder_spriteOrder"]), "Sprite order differs from resources"
     layers = [entry for entry in stage["zorder"] if isinstance(entry, str)]

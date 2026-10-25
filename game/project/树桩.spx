@@ -1,23 +1,17 @@
-// Hazard 3 has its own drawing and body-only contact test.
+// Solid obstacle 2: never ends a run on touch. Geometry is in OW/OH.
 var Slot int
 onStart => { hide }
 onMsg "clear", => { if isCloned { die } }
 onMsg "setup", => {
     if !isCloned {
         hide
-        for i := 0; i < 5; i++ { Slot = i; clone }
+        for i := 0; i < 10; i++ { Slot = i; clone }
     }
 }
 onMsg "render", => {
     if isCloned {
-        setSize 0.16
-        setXYpos HX[Slot], HY[Slot] + 14
-        if HazardKind[Slot] == 3 && HX[Slot] > -275 && HX[Slot] < 275 {
-            show
-
-            if Running && !Paused && BodyX + 9 > HX[Slot] - 14 && BodyX - 9 < HX[Slot] + 14 && PlayerFeet < HY[Slot] + 23 && PlayerFeet + 45 > HY[Slot] + 3 {
-                finishRun "碰到挡路树桩了"
-            }
-        } else { hide }
+        setSize 0.18
+        setXYpos OX[Slot], OY[Slot] + 15.84
+        if OKind[Slot] == 2 && OX[Slot] > -290 && OX[Slot] < 290 { show } else { hide }
     }
 }
