@@ -1,4 +1,4 @@
-// Go Lita v0.5: six score stages, screen state, collection and route scheduling.
+// Go Lita v0.6: six score stages, screen state, collection and fair route scheduling.
 var (
     Screen int // 0 home, 1 instructions, 2 run, 3 settlement
     InputReady bool
@@ -12,11 +12,14 @@ var (
     AchievementTime float64
     screenSince float64
     Score int
+    FinalScore int
     DifficultyStage int
     Mushrooms int
     Diamonds int
     Rank string
     EndReason string
+    BestScore int
+    NewRecord bool
     Running bool
     Paused bool
     DT float64
@@ -104,14 +107,17 @@ func collectItem(i int) {
 func finishRun(reason string) {
     if !Running { return }
     Running = false
+    FinalScore = Score
     EndReason = reason
+    NewRecord = Score > BestScore
+    if NewRecord { BestScore = Score }
     Screen = 3
     screenSince = timer
     AchievementStage = 0
     InputReady = false
     broadcast "finished"
     broadcastAndWait "settlementScore"
-    println "FINISH", reason, Score, Mushrooms, Diamonds, RunTime, BodyX, PlayerFeet
+    println "FINISH", reason, Score, Mushrooms, Diamonds, RunTime, BodyX, PlayerFeet, "BEST", BestScore, "NEW", NewRecord
 }
 func obstacle(k int, kind int, x float64, y float64) {
     OKind[k] = kind
@@ -189,6 +195,16 @@ func makeChunk(i int, left float64, opening bool) {
             ItemEnabled[k] = !opening || int(rand(0, 199)) % 2 == 0
             if HasLedge[i] { ItemX[k] = LX[i]; ItemY[k] = LT[i] + 18 }
         }
+        // Keep every pickup readable. If a route puts an obstacle over the
+        // default line, lift the pickup into the jump arc instead of hiding it
+        // behind the art or making it impossible to collect safely.
+        if !HasLedge[i] {
+            for q := a; q < a+2; q++ {
+                if OKind[q] > 0 && ItemX[k] > OX[q]-OW[q]-25 && ItemX[k] < OX[q]+OW[q]+25 {
+                    ItemY[k] = top + 52
+                }
+            }
+        }
     }
     if OKind[a] == 0 && OKind[a+1] == 0 && gap == 0 && !HasLedge[i] { challengeStreak = 0 } else { challengeStreak++ }
     previousPattern = pattern
@@ -221,6 +237,7 @@ func resetRun() {
     Running = true
     Paused = false
     EndReason = ""
+    NewRecord = false
     WantsRetry = false
     WantsPause = false
     leftPulseFrames = 0
@@ -277,6 +294,7 @@ onKey KeyEnter, => {
     if timer-screenSince > 0.25 {
         if Screen == 0 { WantsHelp = true }
         if Screen == 1 { WantsPlay = true }
+        if Screen == 3 { WantsRetry = true }
     }
 }
 onKey KeySpace, => {
@@ -291,6 +309,7 @@ onKey KeyRight, => { if Screen == 2 && !Paused && InputReady { rightPulseFrames 
 onKey KeyD, => { if Screen == 2 && !Paused && InputReady { rightPulseFrames = 12; leftPulseFrames = 0 } }
 onKey KeyR, => { if Screen >= 2 && !retryHeld { WantsRetry = true } }
 onKey KeyP, => { if Screen == 2 && !pauseHeld { WantsPause = true } }
+onKey KeyEscape, => { if Screen == 2 && !pauseHeld { WantsPause = true } }
 onStart => {
     setVolume 25
     resetTimer
@@ -377,4 +396,3 @@ onStart => {
         wait 0.016
     }
 }
-

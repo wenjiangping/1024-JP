@@ -126,7 +126,11 @@ onMsg "physics", => {
 onMsg "pickupSound", => { play "获得宝石" }
 onMsg "finished", => {
     animate "Fall"
-    say ""
+    if NewRecord { say "新纪录！" }
+    if !NewRecord && EndReason == "碰到火焰了" { say "小心火焰！" }
+    if !NewRecord && EndReason == "碰到炸弹了" { say "躲开炸弹！" }
+    if !NewRecord && EndReason == "掉进林间缺口了" { say "注意脚下！" }
+    if !NewRecord && EndReason == "被障碍挤出小径了" { say "别被挤出小径！" }
 }
 onMsg "pauseChanged", => {
     requestedJump = false
