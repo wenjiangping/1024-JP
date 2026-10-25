@@ -39,7 +39,7 @@ onKey KeySpace, => { if !jumpHeld && Running && !Paused { requestedJump = true }
 onKey KeyUp, => { if !jumpHeld && Running && !Paused { requestedJump = true } }
 onKey KeyW, => { if !jumpHeld && Running && !Paused { requestedJump = true } }
 onMsg "setup", => {
-    setPhysicsMode NoPhysics
+    setPhysicsMode KinematicPhysics
     setRotationStyle LeftRight
     setSize 0.1
     setHeading Right
@@ -69,11 +69,13 @@ onMsg "physics", => {
     wasGrounded = grounded
     wasPushed := pushed
     pushed = false
-    leftDown := keyPressed(KeyLeft) || keyPressed(KeyA) || UILeft
-    rightDown := keyPressed(KeyRight) || keyPressed(KeyD) || UIRight
+    leftDown := keyPressed(KeyLeft) || keyPressed(KeyA) || UILeft || leftPulseFrames > 0
+    rightDown := keyPressed(KeyRight) || keyPressed(KeyD) || UIRight || rightPulseFrames > 0
     move := 0
     if leftDown && !rightDown { move = -1 }
     if rightDown && !leftDown { move = 1 }
+    if leftPulseFrames > 0 { leftPulseFrames-- }
+    if rightPulseFrames > 0 { rightPulseFrames-- }
     // Flip the tail around a stable collision body.
     if move != 0 {
         Facing = move

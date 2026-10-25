@@ -1,6 +1,7 @@
 // Go Lita v0.3: state, collection score and constrained route generation.
 var (
     Score int
+    DifficultyStage int
     Mushrooms int
     Diamonds int
     Rank string
@@ -42,6 +43,8 @@ var (
     epoch int
     previousPattern int
     previousGap bool
+    leftPulseFrames int
+    rightPulseFrames int
     previousTop float64
     challengeStreak int
     retryHeld bool
@@ -51,17 +54,28 @@ var (
 
 func updateRank() {
     Rank = "蹦跶小新手"
-    if Score >= 5 { Rank = "树影穿梭客" }
-    if Score >= 12 { Rank = "灌木飞毛腿" }
-    if Score >= 24 { Rank = "林间寻路家" }
-    if Score >= 40 { Rank = "风之探险家" }
-    if Score >= 60 { Rank = "森林传说" }
+    if Score >= 30 { Rank = "树影穿梭客" }
+    if Score >= 60 { Rank = "灌木飞毛腿" }
+    if Score >= 90 { Rank = "林间寻路家" }
+    if Score >= 120 { Rank = "风之探险家" }
+    if Score >= 150 { Rank = "森林传说" }
+    if Score >= 180 { Rank = "森林守护者" }
 }
+func updateDifficulty() {
+    stage := Score / 30
+    if stage > 6 { stage = 6 }
+    if stage != DifficultyStage {
+        DifficultyStage = stage
+        println "DIFFICULTY", DifficultyStage, Score
+    }
+}
+
 func collectItem(i int) {
     if !Running || Paused || ItemTaken[i] || !ItemEnabled[i] { return }
     ItemTaken[i] = true
     if i % 3 == 2 { Diamonds++; Score += 3 } else { Mushrooms++; Score++ }
     updateRank
+    updateDifficulty
     broadcast "pickupSound"
     println "HARVEST", Score, Mushrooms, Diamonds
 }
@@ -127,6 +141,17 @@ func makeChunk(i int, left float64, opening bool) {
             if progress > 1100 { obstacle a+1, 2, left + width - 65, top }
         }
         if pattern == 9 && progress > 1100 { obstacle a, 4, PX[i], top }
+        // Each 30-point stage adds 10% extra obstacle opportunity. Keep a
+        // generous horizontal gap and use danger only after stage 3.
+        extraRoll := int(rand(0, 999))
+        extraChance := DifficultyStage * 100
+        if DifficultyStage > 0 && extraRoll < extraChance && OKind[a+1] == 0 {
+            extraKind := 1 + int(rand(0, 299)) % 3
+            if DifficultyStage >= 3 && extraRoll % 3 == 0 { extraKind = 4 }
+            extraX := PX[i] + 82
+            if extraX > left + width/2 - 44 { extraX = PX[i] - 82 }
+            obstacle a+1, extraKind, extraX, top
+        }
     }
     for j := 0; j < 3; j++ {
         k := i * 3 + j
@@ -158,15 +183,19 @@ func resetRun() {
     RunTime = 0
     Distance = 0
     Speed = 58
+    DifficultyStage = -1
+    updateDifficulty
     Running = true
     Paused = false
     EndReason = ""
     WantsRetry = false
     WantsPause = false
+    leftPulseFrames = 0
+    rightPulseFrames = 0
     UILeft = false
     UIRight = false
     UIJump = false
-    lastSpeedStep = 0
+    lastSpeedStep = -1
     previousGap = false
     previousPattern = -1
     previousTop = -102
@@ -185,8 +214,12 @@ func resetRun() {
 onClick => {
     if mouseY > -122 { broadcast "requestJump" } else { broadcast "pointerTap" }
 }
-onKey KeyR, => { if !retryHeld { WantsRetry = true } }
-onKey KeyP, => { if !pauseHeld { WantsPause = true } }
+onKey KeyLeft, => { leftPulseFrames = 12 }
+onKey KeyA, => { leftPulseFrames = 12 }
+onKey KeyRight, => { rightPulseFrames = 12 }
+onKey KeyD, => { rightPulseFrames = 12 }
+onKey KeyR, => { WantsRetry = true }
+onKey KeyP, => { WantsPause = true }
 onStart => {
     setVolume 25
     resetTimer
@@ -213,10 +246,12 @@ onStart => {
         pauseHeld = pauseDown
         if Running && !Paused {
             RunTime += DT
-            step := int(RunTime / 30)
-            Speed = 58 * (1 + float64(step) * 0.04)
-            if Speed > 72.5 { Speed = 72.5 }
-            if step != lastSpeedStep { lastSpeedStep = step; println "PACE", RunTime, Speed }
+            Speed = 58 * (1 + float64(DifficultyStage) * 0.10)
+            if Speed > 92.8 { Speed = 92.8 }
+            if DifficultyStage != lastSpeedStep {
+                lastSpeedStep = DifficultyStage
+                println "PACE", DifficultyStage, Speed, Score
+            }
             ScrollDX = Speed * DT
             Distance += ScrollDX
             for i := 0; i < 5; i++ { PX[i] -= ScrollDX; LX[i] -= ScrollDX }

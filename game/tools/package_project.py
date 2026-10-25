@@ -16,11 +16,26 @@ def read_json(path):
 def validate_project():
     stage = read_json(PROJECT / "assets/index.json")
     assert stage["run"] == {"width": 480, "height": 360}, "Expected 4:3 stage"
+    assert stage["physics"] is True, "Global physics must be enabled"
     assert all(not isinstance(z, dict) or z.get("val") != "Hint"
                for z in stage["zorder"]), "Removed Hint monitor reappeared"
     assert "QAScenario" not in (PROJECT / "main.spx").read_text(encoding="utf-8"), \
         "Temporary playtest fixture must not ship"
     ids, names = [], []
+    expected_controls = {
+        "MoveLeft": (-210, -150, 1),
+        "MoveRight": (-160, -150, 1),
+        "JumpButton": (-110, -150, 1),
+        "PauseButton": (160, -150, 1),
+        "RetryButton": (210, -150, 1),
+    }
+    expected_physics = {
+        "Lita": "kinematic",
+        "草地": "static", "草地2": "static", "草地3": "static",
+        "草地4": "static", "草地5": "static", "草台": "static",
+        "石头": "static", "石头1": "static", "树桩": "static",
+        "火焰": "static", "炸弹": "static",
+    }
 
     def require_resource(directory, relative):
         target = (directory / relative).resolve()
@@ -33,6 +48,13 @@ def validate_project():
         if not directory.is_dir():
             continue
         config = read_json(directory / "index.json")
+        if directory.name in expected_physics:
+            assert config["physicsMode"] == expected_physics[directory.name], \
+                f"Physics mode changed: {directory.name}"
+        if directory.name in expected_controls:
+            expected = expected_controls[directory.name]
+            actual = (config["x"], config["y"], config["size"])
+            assert actual == expected, f"Control geometry changed: {directory.name}"
         require_resource(PROJECT, directory.name + ".spx")
         ids.append(config["builder_id"])
         names.append(directory.name)
