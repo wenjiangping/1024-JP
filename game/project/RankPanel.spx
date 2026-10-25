@@ -1,6 +1,6 @@
 onStart => { hide }
 onMsg "uiTick", => {
-    setXYpos -14, 162
+    setXYpos 105, 162
     setSize 0.5
     setCostume DifficultyStage
     if Screen != 0 { show; setLayer Front } else { hide }

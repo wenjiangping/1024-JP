@@ -1,4 +1,4 @@
-// Go Lita v0.4: six score stages, screen state, collection and route scheduling.
+// Go Lita v0.5: six score stages, screen state, collection and route scheduling.
 var (
     Screen int // 0 home, 1 instructions, 2 run, 3 settlement
     InputReady bool
@@ -61,6 +61,8 @@ var (
     retryHeld bool
     pauseHeld bool
     lastSpeedStep int
+    BackgroundPlaying bool
+    BackgroundStartedAt float64
 )
 
 func updateRank() {
@@ -84,7 +86,7 @@ func updateDifficulty() {
         DifficultyFactor = 1
         for j := 0; j < stage; j++ { DifficultyFactor *= 1.3 }
         Speed = 58 * DifficultyFactor
-        ObstacleDensity = 0.5 * DifficultyFactor
+        ObstacleDensity = 1.0 * DifficultyFactor
         obstacleBudget = 0
         updateRank
         println "DIFFICULTY", DifficultyStage, Score, Rank, Speed, ObstacleDensity
@@ -196,6 +198,8 @@ func makeChunk(i int, left float64, opening bool) {
 func resetRun() {
     broadcastAndWait "clear"
     stopAllSounds
+    BackgroundPlaying = false
+    BackgroundStartedAt = 0
     epoch++
     Score = 0
     Mushrooms = 0
@@ -306,6 +310,21 @@ onStart => {
         if WantsHelp { instructions }
         if WantsPlay { resetRun; println "SCREEN PLAY" }
         if WantsRetry { resetRun; println "SCREEN RETRY" }
+        // The title and instructions share a looping background track. Gameplay and settlement are silent.
+        if Screen == 0 || Screen == 1 {
+            if !BackgroundPlaying {
+                play "背景音乐"
+                BackgroundPlaying = true
+                BackgroundStartedAt = now
+            } else if now - BackgroundStartedAt >= 74.0 {
+                stopAllSounds
+                play "背景音乐"
+                BackgroundStartedAt = now
+            }
+        } else if BackgroundPlaying {
+            stopAllSounds
+            BackgroundPlaying = false
+        }
         if Screen == 2 && !InputReady && !mousePressed && !keyPressed(KeySpace) && !keyPressed(KeyUp) && !keyPressed(KeyW) {
             InputReady = true
         }

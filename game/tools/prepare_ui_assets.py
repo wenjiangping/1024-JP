@@ -136,7 +136,7 @@ def main():
         directory=SPRITES/'RankPanel';directory.mkdir(parents=True,exist_ok=True)
         im.save(directory/f'{i}.png')
         rank_costumes.append(costume(str(i),f'{i}.png',284,44))
-    sprite('RankPanel',rank_costumes,-14,162,.5)
+    sprite('RankPanel',rank_costumes,105,162,.5)
     # Dynamic score digits are shared by the HUD and settlement, never baked results.
     digits=[];directory=SPRITES/'ScoreDigits';directory.mkdir(parents=True,exist_ok=True)
     for i in range(10):

@@ -2,13 +2,13 @@
 var held bool
 onMsg "setup", => { held = true }
 onMsg "uiTick", => {
-    setXYpos 65, -156
+    setXYpos 120, -156
     if Paused { setCostume "继续" } else { setCostume "默认" }
     setSize 0.21
     if Screen == 2 { show; setLayer Front } else { hide }
 }
 onMsg "input", => {
-    down := Screen == 2 && mousePressed && mouseX > 44 && mouseX < 86 && mouseY > -177 && mouseY < -135
+    down := Screen == 2 && mousePressed && mouseX > 99 && mouseX < 141 && mouseY > -177 && mouseY < -135
     if down && !held { WantsPause = true }
     held = down
 }

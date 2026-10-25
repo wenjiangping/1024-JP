@@ -6,7 +6,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 GAME = Path(__file__).resolve().parents[1]
 PROJECT = GAME / "project"
-PACKAGE = GAME / "Go-Lita-runner-v0.4.xbp"
+PACKAGE = GAME / "Go-Lita-runner-v0.5.xbp"
 
 
 def read_json(path):
@@ -27,16 +27,16 @@ def validate_project():
     expected_controls = {
         "MoveLeft": (-205, -156, 0.21),
         "MoveRight": (-150, -156, 0.21),
-        "JumpButton": (212, -156, 0.21),
-        "PauseButton": (65, -156, 0.21),
-        "RetryButton": (120, -156, 0.21),
+        "JumpButton": (-95, -156, 0.21),
+        "PauseButton": (120, -156, 0.21),
+        "RetryButton": (175, -156, 0.21),
     }
     expected_physics = {
         "Lita": "kinematic",
         "草地": "static", "草地2": "static", "草地3": "static",
         "草地4": "static", "草地5": "static", "草台": "static",
         "石头": "static", "石头1": "static", "树桩": "static",
-        "火焰": "static", "炸弹": "static",
+        "火焰": "static", "炸弹2": "static",
     }
 
     def require_resource(directory, relative):

@@ -2,11 +2,11 @@
 var held bool
 onMsg "setup", => { held = true }
 onMsg "uiTick", => {
-    setXYpos 212, -156
+    setXYpos -95, -156
     setSize 0.21
     if Screen == 2 { show; setLayer Front } else { hide }
 }
 onMsg "input", => {
-    UIJump = Screen == 2 && InputReady && !Paused && mousePressed && mouseX > 191 && mouseX < 233 && mouseY > -177 && mouseY < -135
+    UIJump = Screen == 2 && InputReady && !Paused && mousePressed && mouseX > -116 && mouseX < -74 && mouseY > -177 && mouseY < -135
 }
 onClick => { if Screen == 2 && InputReady && !Paused { broadcast "requestJump" } }
