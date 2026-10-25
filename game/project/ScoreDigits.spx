@@ -23,7 +23,7 @@ onMsg "uiTick", => {
     n := Score
     count := 1
     for n >= 10 { n /= 10; count++ }
-    if Screen == 0 || Slot >= count {
+    if Screen == 0 || Screen == 2 || Slot >= count {
         hide
         return
     }
