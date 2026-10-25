@@ -12,6 +12,11 @@ onMsg "setup", => {
 }
 onMsg "uiTick", => {
     if !isCloned { return }
+    // Settlement digits are a snapshot. Once rendered, leave the clones
+    // untouched so the runner does not redraw/reorder them every frame.
+    if Screen == 3 && renderedScreen == 3 && renderedScore == Score && rendered[Slot] {
+        return
+    }
     if renderedScreen != Screen || renderedScore != Score {
         for i := 0; i < 8; i++ { rendered[i] = false }
         renderedScreen = Screen
@@ -20,7 +25,7 @@ onMsg "uiTick", => {
     n := Score
     count := 1
     for n >= 10 { n /= 10; count++ }
-    if Screen == 3 && rendered[Slot] && Slot < count { show; setLayer Front; return }
+    if Screen == 3 && rendered[Slot] { return }
     if Screen == 0 || Slot >= count { hide; rendered[Slot] = true; return }
     n = Score
     for i := 0; i < Slot; i++ { n /= 10 }

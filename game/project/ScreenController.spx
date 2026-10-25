@@ -9,7 +9,6 @@ onMsg "input", => {
 onMsg "uiLayers", => {
     ScorePanel.setLayer Front
     RankPanel.setLayer Front
-    broadcastAndWait "scoreFront"
     if Screen == 0 { HomeCover.setLayer Front; StartButton.setLayer Front }
     if Screen == 1 { Dimmer.setLayer Front; HelpPanel.setLayer Front }
     if Screen == 3 {
@@ -19,7 +18,6 @@ onMsg "uiLayers", => {
         ResultRank.setLayer Front
         ResultRetry.setLayer Front
         HomeButton.setLayer Front
-        broadcastAndWait "scoreFront"
     }
     if Screen == 2 { Achievement.setLayer Front }
 }
