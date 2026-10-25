@@ -39,4 +39,11 @@
 - `Esc` 可暂停/继续，结算页按 `Enter` 可直接重开；原有 `P`、`R` 和屏幕按钮继续可用。
 - 路段生成后检查障碍与收集物的水平重叠，重叠的收集物抬到跳跃路线，避免素材被障碍遮住。
 
-本地回归：`python game/tools/package_project.py`、`python game/tools/package_project.py --check` 与 `git diff --check` 通过。正式 XBuilder 预览应继续按上面的 v0.5 流程验证首页、说明、跑酷、暂停、收集、失败和结算；本次没有改变舞台尺寸、按钮几何、计分公式或资源顺序。
+本地回归：`python game/tools/package_project.py`、`python game/tools/package_project.py --check` 与 `git diff --check` 通过。随后将同一份 `Go-Lita-runner-v0.5.xbp` 导入用户 `En / IdeaDash` XBuilder 项目并运行：
+
+- 首页、说明页和跑酷页画面正常；控制台出现 `SCREEN HOME`、`SCREEN HELP`、`SCREEN PLAY`、`HARVEST`。
+- `P` 暂停/恢复与 `Esc` 暂停均输出 `PAUSE true/false`，暂停期间分数和时间冻结。
+- 自然结束输出 `FINISH 被障碍挤出小径了 ... BEST 6 NEW true`，结算卡显示真实分数 `6`，Lita 显示“新纪录！”。
+- 结算页按 `Enter` 输出 `SCREEN RETRY` 并重新开始，确认无需重新打开说明页。
+
+本次没有改变舞台尺寸、按钮几何、计分公式或资源顺序。
