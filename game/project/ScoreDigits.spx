@@ -42,3 +42,4 @@ onMsg "uiTick", => {
     rendered[Slot] = true
 }
 onMsg "scoreFront", => { if isCloned { setLayer Front } }
+onMsg "scoreFront", => { if isCloned { setLayer Front } }

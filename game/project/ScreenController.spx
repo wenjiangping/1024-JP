@@ -1,6 +1,7 @@
 // Polling supplements fast sprite clicks; screenSince prevents click-through.
 var wasDown bool
-onStart => { hide; wasDown = true }
+var settlementLayered bool
+onStart => { hide; wasDown = true; settlementLayered = false }
 onMsg "input", => {
     if mousePressed && !wasDown && Screen != 2 { interfaceTap }
     wasDown = mousePressed
@@ -18,6 +19,12 @@ onMsg "uiLayers", => {
         ResultRank.setLayer Front
         ResultRetry.setLayer Front
         HomeButton.setLayer Front
+        if !settlementLayered {
+            broadcastAndWait "scoreFront"
+            settlementLayered = true
+        }
+    } else {
+        settlementLayered = false
     }
     if Screen == 2 { Achievement.setLayer Front }
 }
