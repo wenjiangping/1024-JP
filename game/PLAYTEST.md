@@ -1,6 +1,6 @@
 # Go Lita 验收记录
 
-最新：2026-11-03 的原生控件与 HomeCover 修复已在原项目发布，详见本文件末尾“原生控件与封面验收”。下方 2026-10-25/26 记录保留为历史，旧版隐藏运行积分的行为已被本轮修复取代。
+最新：2026-11-03 的原生控件与 HomeCover 修复已在原项目发布，详见本文件末尾“二次调整验收”。下方 2026-10-25/26 记录保留为历史，旧版隐藏运行积分的行为已被本轮修复取代。
 
 2026-10-25，用户账号 En / 原项目 IdeaDash，XBuilder SPX 3.3.0 浏览器预览，480 × 360、4:3。项目仅导入、编译和预览，未发布。
 
@@ -85,3 +85,21 @@ HomeCover 编辑态默认可见，导出的自动缩略图为 HomeCover，避免
 发布后在[公开页面](https://x.qiniu.com/project/En/IdeaDash)进入说明和跑酷，实际收集到 2 分后暂停，运行积分与称号系统控件均正常显示。[发布版运行画面](evidence/v07/published-live-hud.png)。
 
 本地 `python game/tools/package_project.py --check`、Python 工具语法检查与 `git diff --check` 通过；正式包为 33 个精灵、171 个文件。PR #5 保持打开，未合并。
+
+
+## 二次调整验收（2026-11-03）
+
+按用户后续要求，更新同一 [PR #5](https://github.com/wenjiangping/1024-JP/pull/5)，先推送修改，再导入原 XBuilder 项目。正式包为 36 个精灵、194 个文件和 2 个系统 Monitor。
+
+- 运行页右侧称号控件移至 x=102.6，左侧维持 x=-225；两侧外边距约为 15 个舞台像素。自然运行和 21 分称号截图均保持一致边距。[运行画面](evidence/v07-followup/production-live-balanced.png)、[21 分运行画面](evidence/v07-followup/qa-live-21.png)。
+- 结算页移除系统 Monitor，恢复原版橙色数字和称号及“囤粮分 / 达成成就”文字。`FinalScore` 与 `FinalRank` 在结束瞬间从运行控件所绑定的 `Score` / `Rank` 同时冻结。
+- 正式自然试玩连续收集 6 个蘑菇，结算显示 6 与“蹦跶小新手”；Enter 重开显示系统积分 0，结算文字不残留。[自然日志](evidence/v07-followup/production-natural-log.txt)、[重开画面](evidence/v07-followup/production-retry.png)。
+- 最新 QA 包中 18 蘑菇加 1 水晶为 21 分，重复领取及暂停收集不加分；运行控件与原版结算均显示 21 / 树影穿梭客。[结算画面](evidence/v07-followup/qa-final-21.png)。
+- 零分结算正确显示 0 与“蹦跶小新手”。[画面](evidence/v07-followup/qa-zero.png)。
+- 126 分结束后尝试重复结束与收集，并将实时 Score 改为 999、Rank 改为测试文字；原版结算仍为 126 / 森林守护者。“新纪录！”气泡已移除。[冻结画面](evidence/v07-followup/qa-frozen-126.png)、[QA 日志](evidence/v07-followup/qa-log.txt)。预置分数仅用于边界验证，不是自然试玩成绩。
+
+QA 后再次导入正式包并编译运行至首页；导出云端存档确认 37 份 `.spx` 与仓库逐字节一致，无 QA 标记，Lita 脚本无“新纪录！”文本，只有 Score/Rank 两个运行控件，HomeCover 默认可见，项目描述与操作说明保持一致。
+
+`python game/tools/package_project.py --check`、工具语法检查及 `git diff --check` 通过。本轮仅发布一次，发布说明使用玩家可读的简短概述：“优化界面布局与结算展示，提升游戏体验。”。[发布成功](evidence/v07-followup/publish-success.png)。PR 保持打开，未合并。
+
+发布后在公开版本自然试玩，结算显示 6 / 蹦跶小新手，保留原版橙色文字，无“新纪录！”气泡；运行控件左右外边距一致，HomeCover 与简短发布历史均正常。[公开版运行](evidence/v07-followup/published-live-balanced.png)、[公开版结算](evidence/v07-followup/published-settlement.png)、[公开封面](evidence/v07-followup/published-homecover.png)。

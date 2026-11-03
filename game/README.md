@@ -90,7 +90,7 @@
 | `project/Achievement.spx`、`main.spx` 中 `syncMonitors` | 成就时效与原生控件可见性 |
 | `project/Move*.spx`、`*Button.spx` | 各自按钮事件、连续按压和状态隔离 |
 | `project/assets/` | 全部造型、背景、声音与资源索引 |
-| `PLAYTEST.md`、`evidence/v07/` | 本轮实测、发布截图、日志与覆盖范围 |
+| `PLAYTEST.md`、`evidence/v07-followup/` | 本轮实测、发布截图、日志与覆盖范围 |
 
 ## v0.7 原生 HUD 与封面修复
 

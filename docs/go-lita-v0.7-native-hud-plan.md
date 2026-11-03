@@ -1,45 +1,27 @@
-# Go Lita v0.7 native HUD and HomeCover plan
+# Go Lita v0.7 HUD、结算和封面优化方案
 
-## Goal
+本 PR 的最终范围：运行页保留 XBuilder 系统控件，结算页使用原版文字样式；运行积分与结算结果使用同一数据源；HomeCover 作为项目封面。
 
-Repair the score handoff between the running screen and the settlement screen, while using XBuilder's built-in Monitor widgets for the score and title controls. Replace the project listing thumbnail with the existing `HomeCover` artwork so the project card and editor cover show the same home screen.
+## 运行页
 
-## Implementation plan
+- 系统 Monitor 分别绑定舞台变量 `Score` 和 `Rank`，仅在 `Screen == 2` 时显示。
+- 左侧控件位于 (-225,168)，右侧控件由 x=65 移至 x=102.6，尺寸均为 90%。六个称号都是五个汉字、显示宽度相同，左右外边距约为 15 个舞台像素。
+- 不恢复运行页模拟系统控件的 ScorePanel / RankPanel 精灵。
 
-1. Add native XBuilder Monitor widgets bound to the stage globals `Score`, `FinalScore`, and `Rank`.
-   - `ScoreMonitor` and `RankMonitor` are visible only on `Screen == 2`.
-   - `SettlementScoreMonitor` and `SettlementRankMonitor` are visible only on `Screen == 3`.
-   - Keep `FinalScore` assigned in `finishRun` before the screen changes, so settlement reads the exact score from the ending frame.
-2. Remove the hand-drawn score/title sprite controls and their layer-management code. The monitor visibility is synchronized from stage code with `getWidget(Monitor, ...)` and the standard `show`/`hide` APIs.
-3. Keep collection and difficulty updates in one path. `Score` remains the only live score source; `FinalScore` is the frozen settlement snapshot, and `Rank` is updated from the same difficulty stage table.
-4. Set `game/project/builder-thumbnail.jpeg` from `HomeCover` artwork and keep the `HomeCover` sprite as the runtime home screen cover.
-5. Extend the package validator to require the native monitors, the frozen settlement binding, the HomeCover thumbnail, and an archive/source byte-for-byte match.
+## 结算页
 
-## Acceptance criteria
+- 使用原版 ScoreDigits、ResultRank、ResultLabels 的橙色数字、称号及文字布局，移除结算页系统 Monitor。
+- `finishRun` 中同时保存 `FinalScore = Score`、`FinalRank = Rank`。这两个源变量也是运行控件读取的值，结束只冻结一次。
+- 数字克隆只在 `Screen == 3` 读取冻结分数，零分显示 0，多位数字按位显示；面板置顶后再将数字置顶，避免被面板遮挡。重开清理并重建数字克隆。
+- 称号直接按 `FinalRank` 字符串选择原版造型，不另写一套分数阈值。
+- 移除“新纪录！”说话气泡。
 
-- During `Screen == 2`, the XBuilder system widgets show `囤粮分: <Score>` and `称号: <Rank>`.
-- On `Screen == 3`, the system widgets show `囤粮分: <FinalScore>` and the final title; the values remain stable while the settlement page is open.
-- Finishing on the same frame as a pickup never increments the settlement score, because danger is resolved before pickup and `FinalScore` is captured once.
-- The project card thumbnail is the `HomeCover` artwork, and the exported package contains the same thumbnail and source assets.
-- `python game/tools/package_project.py --check` and `git diff --check` pass before importing the package into the original XBuilder project.
+## 封面与工程
 
-## XBuilder rollout
+HomeCover 在编辑态默认可见，缩略图由同一原图生成，避免 XBuilder 自动保存时重新截取石堆场景。保留原项目描述、玩法说明、物理、计分公式和操作按钮。正式包校验原生控件绑定、原版结算资源、完整资源及 ZIP/source 一致性，并拒绝临时 QA 标记。
 
-After this plan is synchronized through the pull request, import the generated XBP into the existing `En / IdeaDash` project, run the home → help → play → settlement flow, verify the native monitors and cover, then publish the updated project once.
+## 同步与验收
 
-## Completion (2026-11-03)
+先将方案和改动推送到 PR #5，再同步原 `En / IdeaDash` 项目。XBuilder SPX 3.3.0 编译通过，正式自然试玩得到 6 分并传入原版结算；重开正常。独立临时包验证 0 / 21 / 126 分、暂停与重复领取，结束后改变实时分数和称号不会影响冻结结果。
 
-Implemented and verified in XBuilder SPX 3.3.0. Native Monitor widgets now display the live score/title and the frozen settlement score/title. HomeCover is visible in the editor so automatic thumbnail updates retain the requested cover. Natural play reached 6 points; disposable fixtures covered the five rank thresholds, 0/21/126-point settlements, duplicate pickups, pause, and post-finish score changes.
-
-Restored the production package after QA and exported it from the original cloud project: all 34 scripts match the repository byte for byte, all four native widget bindings are correct, no QA entry points remain, and the thumbnail is HomeCover. Published the original project once and verified its public cover, release history, and live score controls. See [acceptance evidence](../game/PLAYTEST.md) and [published project](https://x.qiniu.com/project/En/IdeaDash).
-
-
-## Follow-up: balanced HUD and original settlement style (2026-11-03)
-
-The user's updated requirement keeps the two native Monitor widgets on the running screen, with equal outer margins, and restores the original orange artwork for the settlement score and title. Move RankMonitor from x=65 to x=102.6 at 90% scale, retaining the left monitor at x=-225. All six five-character titles have the same rendered width.
-
-Remove the settlement monitors. Restore the original ScoreDigits, ResultRank and ResultLabels artwork; display it only on Screen 3. Capture FinalScore=Score and FinalRank=Rank in finishRun, so the result uses exactly the same source values as the running widgets. Resolve the title costume by its captured string. Refresh digits from the frozen snapshot and raise them after ResultPanel, without the old per-clone draw flags that could hide results. Clear the snapshots and digit clones on retry.
-
-Push these changes to PR #5 before importing into the original En / IdeaDash project. Verify equal running margins, the original settlement appearance, natural live-to-final agreement, 0/21/126-point results, frozen title/score, and retry; then restore the production package, compare the cloud export, and publish once for this follow-up.
-
-Remove the new-record speech bubble from the settlement. The public release note should be a short player-facing overview, without source identifiers or implementation detail.
+测试后恢复正式包，云端导出的 37 份脚本与仓库逐字节一致，仅含两个运行系统 Monitor，无 QA 入口与“新纪录！”气泡。2026-11-03 已为本轮二次调整发布一次，公开说明为“优化界面布局与结算展示，提升游戏体验。”。详细记录见 [验收记录](../game/PLAYTEST.md)，体验入口为 [Go Lita](https://x.qiniu.com/project/En/IdeaDash)。
