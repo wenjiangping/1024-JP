@@ -13,6 +13,7 @@ var (
     screenSince float64
     Score int
     FinalScore int
+    FinalRank string
     DifficultyStage int
     Mushrooms int
     Diamonds int
@@ -70,24 +71,13 @@ var (
 
 func syncMonitors() {
     scoreMonitor := getWidget(Monitor, "ScoreMonitor")
-    settlementMonitor := getWidget(Monitor, "SettlementScoreMonitor")
     rankMonitor := getWidget(Monitor, "RankMonitor")
-    settlementRankMonitor := getWidget(Monitor, "SettlementRankMonitor")
     if Screen == 2 {
         scoreMonitor.show
         rankMonitor.show
-        settlementMonitor.hide
-        settlementRankMonitor.hide
-    } else if Screen == 3 {
-        scoreMonitor.hide
-        rankMonitor.hide
-        settlementMonitor.show
-        settlementRankMonitor.show
     } else {
         scoreMonitor.hide
-        settlementMonitor.hide
         rankMonitor.hide
-        settlementRankMonitor.hide
     }
 }
 
@@ -131,6 +121,7 @@ func finishRun(reason string) {
     if !Running { return }
     Running = false
     FinalScore = Score
+    FinalRank = Rank
     EndReason = reason
     NewRecord = Score > BestScore
     if NewRecord { BestScore = Score }
@@ -243,6 +234,7 @@ func resetRun() {
     epoch++
     Score = 0
     FinalScore = 0
+    FinalRank = ""
     Mushrooms = 0
     Diamonds = 0
     RunTime = 0

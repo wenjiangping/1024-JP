@@ -12,8 +12,11 @@ onMsg "uiLayers", => {
     if Screen == 3 {
         Dimmer.setLayer Front
         ResultPanel.setLayer Front
+        ResultLabels.setLayer Front
+        ResultRank.setLayer Front
         ResultRetry.setLayer Front
         HomeButton.setLayer Front
+        broadcastAndWait "scoreFront"
     }
     if Screen == 2 { Achievement.setLayer Front }
 }

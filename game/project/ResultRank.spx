@@ -1,0 +1,6 @@
+onStart => { hide }
+onMsg "uiTick", => {
+    setXYpos 66, -60
+    setSize 0.5
+    if Screen == 3 { setCostume FinalRank; show } else { hide }
+}

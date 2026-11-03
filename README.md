@@ -29,4 +29,4 @@ Lita 是一只生活在森林里的小探险家。为了储备过冬粮食，它
 - [工程说明、规则与验证记录](game/README.md)
 - [XBuilder 项目目录](game/project/)
 
-2026-11-03 已将 v0.7 更新发布到原项目：运行页恢复囤粮分，运行与结算均使用 XBuilder 系统 Monitor，结算读取冻结积分，项目封面改为 HomeCover。改动与验证记录见 [PR #5](https://github.com/wenjiangping/1024-JP/pull/5)（待评审，未合并）及 [验收记录](game/PLAYTEST.md)。仓库保留开发过程、源码和完整 XBuilder 工程包，便于评审和复现。
+2026-11-03 已将 v0.7 更新发布到原项目：运行页恢复囤粮分，运行使用 XBuilder 系统 Monitor，结算以原版文字样式读取冻结积分与称号，项目封面改为 HomeCover。改动与验证记录见 [PR #5](https://github.com/wenjiangping/1024-JP/pull/5)（待评审，未合并）及 [验收记录](game/PLAYTEST.md)。仓库保留开发过程、源码和完整 XBuilder 工程包，便于评审和复现。

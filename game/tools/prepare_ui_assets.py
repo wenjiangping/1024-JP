@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 import shutil
 import uuid
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[2]
 PROJECT = ROOT / 'game/project'
@@ -36,6 +36,40 @@ def sprite(name, costumes, x=0, y=0, size=1, rect=None):
 def costume(name, filename, w, h):
     return dict(name=name, path=filename, x=w/2, y=h/2, faceRight=0, bitmapResolution=1,
                 imageWidth=w, imageHeight=h, builder_id=uuid.uuid4().hex[:21])
+
+
+def prepare_settlement_text():
+    """Rebuild the original orange result text; the running HUD stays native."""
+    def text(im, xy, word, size, fill):
+        font = ImageFont.truetype('C:/Windows/Fonts/msyhbd.ttc', size)
+        ImageDraw.Draw(im).text(xy, word, font=font, fill=fill, anchor='mm')
+
+    digits = []
+    directory = SPRITES/'ScoreDigits'
+    directory.mkdir(parents=True, exist_ok=True)
+    for i in range(10):
+        im = Image.new('RGBA', (56, 72))
+        text(im, (28, 34), str(i), 64, '#ff6428')
+        im.save(directory/f'{i}.png')
+        digits.append(costume(str(i), f'{i}.png', 56, 72))
+    sprite('ScoreDigits', digits)
+    ranks = ['蹦跶小新手', '树影穿梭客', '灌木飞毛腿', '林间寻路家', '风之探险家', '森林守护者']
+    results = []
+    directory = SPRITES/'ResultRank'
+    directory.mkdir(parents=True, exist_ok=True)
+    for i, rank in enumerate(ranks):
+        im = Image.new('RGBA', (280, 56))
+        text(im, (140, 27), rank, 32, '#ff6428')
+        im.save(directory/f'{i}.png')
+        results.append(costume(rank, f'{i}.png', 280, 56))
+    sprite('ResultRank', results, 66, -60, .5)
+    im = Image.new('RGBA', (560, 70))
+    text(im, (148, 35), '囤粮分', 21, '#512516')
+    text(im, (412, 35), '达成成就', 21, '#512516')
+    directory = SPRITES/'ResultLabels'
+    directory.mkdir(parents=True, exist_ok=True)
+    im.save(directory/'art.png')
+    sprite('ResultLabels', [costume('默认', 'art.png', *im.size)], 0, -25, .5, list(im.size))
 
 
 def main():
@@ -110,6 +144,7 @@ def main():
 
     png_sprite('Dimmer',Image.new('RGBA',(960,720),(10,31,38,185)))
     png_sprite('ScreenController',Image.new('RGBA',(1,1),(0,0,0,0)))
+    prepare_settlement_text()
     cover_config = SPRITES/'HomeCover/index.json'
     cover = json.loads(cover_config.read_text(encoding='utf-8'))
     cover['visible'] = True
@@ -119,11 +154,11 @@ def main():
 
     stage=json.loads((PROJECT/'assets/index.json').read_text(encoding='utf-8'))
     for name in ['ScreenController','HomeCover','StartButton','Dimmer','HelpPanel',
-                 'ResultPanel','ResultRetry','HomeButton','Achievement']:
+                 'ResultPanel','ResultLabels','ScoreDigits','ResultRank','ResultRetry','HomeButton','Achievement']:
         if name not in stage['zorder']:stage['zorder'].append(name)
     stage['builder_spriteOrder']=[json.loads((SPRITES/n/'index.json').read_text(encoding='utf-8'))['builder_id'] for n in stage['zorder'] if isinstance(n,str)]
     dump(PROJECT/'assets/index.json',stage)
-    dump(ROOT/'game/UI-ASSETS.json',dict(note='User originals preserved. Runtime PNGs resized proportionally; score and title use native XBuilder Monitor widgets.',assets=manifest))
+    dump(ROOT/'game/UI-ASSETS.json',dict(note='User originals preserved. Runtime HUD uses native XBuilder Monitors; settlement uses original orange text assets bound to frozen score/title.',assets=manifest))
     print(f'Prepared {len(manifest)} supplied art resources and native Monitor bindings preserved')
 
 

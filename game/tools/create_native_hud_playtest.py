@@ -33,7 +33,8 @@ onKey Key6, => {
     collectItem 0
     finishRun "QA duplicate finish"
     Score = 999
-    println "QA_FROZEN", FinalScore, Score, Rank
+    Rank = "QA changed live title"
+    println "QA_FROZEN", FinalScore, Score, FinalRank, Rank
 }
 onKey Key7, => { resetRun; finishRun "QA zero settlement"; println "QA_ZERO", FinalScore, Rank }
 onKey Key8, => {
@@ -49,7 +50,7 @@ onKey Key8, => {
     collectItem 0
     println "QA_CRYSTAL_PAUSED", Score, Mushrooms, Diamonds, Rank
 }
-onKey Key9, => { finishRun "QA crystal settlement"; println "QA_CRYSTAL_FINAL", FinalScore, Rank }
+onKey Key9, => { finishRun "QA crystal settlement"; println "QA_CRYSTAL_FINAL", FinalScore, FinalRank }
 '''
 
 

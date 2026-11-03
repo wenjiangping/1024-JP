@@ -29,9 +29,7 @@ def validate_project():
                 if isinstance(z, dict) and z.get("type") == "monitor"]
     expected_monitors = {
         "ScoreMonitor": ("囤粮分", "Score", False),
-        "SettlementScoreMonitor": ("囤粮分", "FinalScore", False),
         "RankMonitor": ("称号", "Rank", False),
-        "SettlementRankMonitor": ("称号", "Rank", False),
     }
     assert {m.get("name") for m in monitors} == set(expected_monitors), \
         "Native score/title monitors differ from the runtime contract"
@@ -42,10 +40,15 @@ def validate_project():
         assert monitor.get("mode") == 1 and monitor.get("style") == "default" \
             and monitor.get("target") == "", "Expected a standard stage Monitor"
     assert len({m["builder_id"] for m in monitors}) == len(monitors), "Duplicate widget IDs"
-    removed = {"ScorePanel", "RankPanel", "ScoreDigits", "ResultRank", "ResultLabels"}
+    positions = {m['name']: (m['x'], m['y'], m['size']) for m in monitors}
+    assert positions == {'ScoreMonitor': (-225, 168, 0.9), 'RankMonitor': (102.6, 168, 0.9)}, \
+        "Runtime native monitors must retain matching outer margins"
+    removed = {"ScorePanel", "RankPanel"}
     sprite_layers = {x for x in stage["zorder"] if isinstance(x, str)}
     assert not removed.intersection(sprite_layers), \
-        "Custom score/title sprites must not ship"
+        "Runtime score/title must use native widgets"
+    assert {'ScoreDigits', 'ResultRank', 'ResultLabels'}.issubset(sprite_layers), \
+        "Original settlement text assets must be present"
     thumbnail = PROJECT / "builder-thumbnail.jpeg"
     home_cover = PROJECT / "assets/sprites/HomeCover/art.png"
     assert thumbnail.is_file() and home_cover.is_file(), "HomeCover thumbnail assets are required"

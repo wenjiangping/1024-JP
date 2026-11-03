@@ -32,3 +32,12 @@ After this plan is synchronized through the pull request, import the generated X
 Implemented and verified in XBuilder SPX 3.3.0. Native Monitor widgets now display the live score/title and the frozen settlement score/title. HomeCover is visible in the editor so automatic thumbnail updates retain the requested cover. Natural play reached 6 points; disposable fixtures covered the five rank thresholds, 0/21/126-point settlements, duplicate pickups, pause, and post-finish score changes.
 
 Restored the production package after QA and exported it from the original cloud project: all 34 scripts match the repository byte for byte, all four native widget bindings are correct, no QA entry points remain, and the thumbnail is HomeCover. Published the original project once and verified its public cover, release history, and live score controls. See [acceptance evidence](../game/PLAYTEST.md) and [published project](https://x.qiniu.com/project/En/IdeaDash).
+
+
+## Follow-up: balanced HUD and original settlement style (2026-11-03)
+
+The user's updated requirement keeps the two native Monitor widgets on the running screen, with equal outer margins, and restores the original orange artwork for the settlement score and title. Move RankMonitor from x=65 to x=102.6 at 90% scale, retaining the left monitor at x=-225. All six five-character titles have the same rendered width.
+
+Remove the settlement monitors. Restore the original ScoreDigits, ResultRank and ResultLabels artwork; display it only on Screen 3. Capture FinalScore=Score and FinalRank=Rank in finishRun, so the result uses exactly the same source values as the running widgets. Resolve the title costume by its captured string. Refresh digits from the frozen snapshot and raise them after ResultPanel, without the old per-clone draw flags that could hide results. Clear the snapshots and digit clones on retry.
+
+Push these changes to PR #5 before importing into the original En / IdeaDash project. Verify equal running margins, the original settlement appearance, natural live-to-final agreement, 0/21/126-point results, frozen title/score, and retry; then restore the production package, compare the cloud export, and publish once for this follow-up.
