@@ -23,6 +23,8 @@ def validate_project():
         "Temporary playtest fixture must not ship"
     assert "QAFlow" not in (PROJECT / "main.spx").read_text(encoding="utf-8"), \
         "Temporary screen audit must not ship"
+    assert "QAHUD" not in (PROJECT / "main.spx").read_text(encoding="utf-8"), \
+        "Temporary native HUD fixture must not ship"
     monitors = [z for z in stage["zorder"]
                 if isinstance(z, dict) and z.get("type") == "monitor"]
     expected_monitors = {

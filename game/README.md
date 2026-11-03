@@ -6,7 +6,7 @@
 
 云端：[En / IdeaDash，显示名 Go Lita](https://x.qiniu.com/editor/En/IdeaDash/stage/code)。点击“运行”后显示首页，点击 START 打开说明，再点击说明图片的任意位置开始游戏。说明关闭的点击不会穿透为跳跃。失败后显示本局实际囤粮分和对应称号；RESTART 直接重开，HOME 返回首页。首页、说明、结算均冻结地图和计分。首页与说明页循环播放背景音乐，进入跑酷后停止。
 
-本地恢复：先导出需要保留的修改，再通过项目菜单导入 **Go-Lita-runner-v0.5.xbp**。包内包含全部源码、图片、动画及声音。仓库同时保留历史版本，当前正式包沿用 v0.5 文件名以保持导入路径稳定，源码已经是 v0.7 增强版。项目仅保存和预览，未发布。
+本地恢复：先导出需要保留的修改，再通过项目菜单导入 **Go-Lita-runner-v0.5.xbp**。包内包含全部源码、图片、动画及声音。仓库同时保留历史版本，当前正式包沿用 v0.5 文件名以保持导入路径稳定，源码已经是 v0.7 增强版。2026-11-03 已更新并发布到原项目 `En / IdeaDash`，发布内容与验证记录见 [PLAYTEST.md](PLAYTEST.md) 和 [PR #5](https://github.com/wenjiangping/1024-JP/pull/5)。
 
 完整 XBuilder 云端存档见 [`archive/Go-Lita-XBuilder-IdeaDash-2026-10-26.xbp`](archive/Go-Lita-XBuilder-IdeaDash-2026-10-26.xbp)。该文件是从已发布的 `En / IdeaDash` 项目直接导出的完整包，包含工程源码、所有精灵与造型、动画、声音、背景、字体和配置；演示视频见 [`media/Video-Go-Lita.mp4`](../media/Video-Go-Lita.mp4)，在线体验见 [Go Lita](https://x.qiniu.com/project/En/IdeaDash)。
 
@@ -90,7 +90,7 @@
 | `project/Achievement.spx`、`main.spx` 中 `syncMonitors` | 成就时效与原生控件可见性 |
 | `project/Move*.spx`、`*Button.spx` | 各自按钮事件、连续按压和状态隔离 |
 | `project/assets/` | 全部造型、背景、声音与资源索引 |
-| `PLAYTEST.md`、`evidence/v019/` | 实测、截图、日志与覆盖范围 |
+| `PLAYTEST.md`、`evidence/v07/` | 本轮实测、发布截图、日志与覆盖范围 |
 
 ## v0.7 原生 HUD 与封面修复
 
@@ -111,8 +111,8 @@ python game/tools/package_project.py --check
 
 检查 4:3、全局物理、按钮几何、资源与动画、精灵和声音顺序、临时 QA 隔离、ZIP 完整性及源码逐字节一致。正式包为 33 个精灵、171 个文件和 4 个系统 Monitor；SPX 编译与预览需在 XBuilder 验证。
 
-`python game/tools/create_flow_playtest.py` 生成临时页面/阈值测试包到 `other/v019/`，不改正式源码。数字 1–5 实际调用收集函数跨过各阈值；6/7 预置结算 126/0；8 测 18+3；9 审计各阶段实际路段生成器并测 99+3 与封顶。临时分数用于验证，不是自然试玩成绩，禁止上传为正式工程。旧碰撞测试工具也只生成临时包。
+`python game/tools/create_native_hud_playtest.py --output D:\AAA-WORK\CodeX-other\go-lita-native-hud-20261103\temp\Go-Lita-native-hud-QA.xbp` 生成临时系统控件测试包，不改正式源码，输出路径必须显式指定。数字 1–5 实际调用收集函数跨过各阈值并验证重复收集；6/7 预置结算 126/0；8 测 18+3、重复水晶和暂停拒绝收集；9 结束为 21 分。6 还在结束后尝试收集和重复结束，并将实时分数改成 999，验证结算仍为 126。临时分数不是自然试玩成绩，测试后必须恢复正式包，禁止发布 QA 包。正式打包器会拒绝 `QAHUD` 标记。
 
 `prepare_ui_assets.py --source 素材` 是可选的资源重建工具，需 Pillow 与 Windows 微软雅黑字体；已提交完整资源，无需重建即可运行。该工具会更新资源 ID，日常只改脚本不必运行。
 
-`Parkour Game.zip` 仅为用户提供的参考，没有运行或搬用其 EXE/DLL、素材。官方 `goplus/builder` 仓库只读参考；两个 PR 保持打开、不合并。
+`Parkour Game.zip` 仅为用户提供的参考，没有运行或搬用其 EXE/DLL、素材。官方 `goplus/builder` 仓库只读参考；本轮 PR #5 保持打开，未合并。

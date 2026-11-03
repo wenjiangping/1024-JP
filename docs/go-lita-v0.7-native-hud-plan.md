@@ -26,3 +26,9 @@ Repair the score handoff between the running screen and the settlement screen, w
 ## XBuilder rollout
 
 After this plan is synchronized through the pull request, import the generated XBP into the existing `En / IdeaDash` project, run the home → help → play → settlement flow, verify the native monitors and cover, then publish the updated project once.
+
+## Completion (2026-11-03)
+
+Implemented and verified in XBuilder SPX 3.3.0. Native Monitor widgets now display the live score/title and the frozen settlement score/title. HomeCover is visible in the editor so automatic thumbnail updates retain the requested cover. Natural play reached 6 points; disposable fixtures covered the five rank thresholds, 0/21/126-point settlements, duplicate pickups, pause, and post-finish score changes.
+
+Restored the production package after QA and exported it from the original cloud project: all 34 scripts match the repository byte for byte, all four native widget bindings are correct, no QA entry points remain, and the thumbnail is HomeCover. Published the original project once and verified its public cover, release history, and live score controls. See [acceptance evidence](../game/PLAYTEST.md) and [published project](https://x.qiniu.com/project/En/IdeaDash).
