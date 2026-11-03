@@ -41,3 +41,5 @@ The user's updated requirement keeps the two native Monitor widgets on the runni
 Remove the settlement monitors. Restore the original ScoreDigits, ResultRank and ResultLabels artwork; display it only on Screen 3. Capture FinalScore=Score and FinalRank=Rank in finishRun, so the result uses exactly the same source values as the running widgets. Resolve the title costume by its captured string. Refresh digits from the frozen snapshot and raise them after ResultPanel, without the old per-clone draw flags that could hide results. Clear the snapshots and digit clones on retry.
 
 Push these changes to PR #5 before importing into the original En / IdeaDash project. Verify equal running margins, the original settlement appearance, natural live-to-final agreement, 0/21/126-point results, frozen title/score, and retry; then restore the production package, compare the cloud export, and publish once for this follow-up.
+
+Remove the new-record speech bubble from the settlement. The public release note should be a short player-facing overview, without source identifiers or implementation detail.
