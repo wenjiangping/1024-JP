@@ -1,4 +1,4 @@
-// Go Lita v0.6: six score stages, screen state, collection and fair route scheduling.
+// Go Lita v0.7: six score stages, screen state, collection and fair route scheduling.
 var (
     Screen int // 0 home, 1 instructions, 2 run, 3 settlement
     InputReady bool
@@ -68,6 +68,29 @@ var (
     BackgroundStartedAt float64
 )
 
+func syncMonitors() {
+    scoreMonitor := getWidget(Monitor, "ScoreMonitor")
+    settlementMonitor := getWidget(Monitor, "SettlementScoreMonitor")
+    rankMonitor := getWidget(Monitor, "RankMonitor")
+    settlementRankMonitor := getWidget(Monitor, "SettlementRankMonitor")
+    if Screen == 2 {
+        scoreMonitor.show
+        rankMonitor.show
+        settlementMonitor.hide
+        settlementRankMonitor.hide
+    } else if Screen == 3 {
+        scoreMonitor.hide
+        rankMonitor.hide
+        settlementMonitor.show
+        settlementRankMonitor.show
+    } else {
+        scoreMonitor.hide
+        settlementMonitor.hide
+        rankMonitor.hide
+        settlementRankMonitor.hide
+    }
+}
+
 func updateRank() {
     Rank = "蹦跶小新手"
     if DifficultyStage == 1 { Rank = "树影穿梭客" }
@@ -116,7 +139,7 @@ func finishRun(reason string) {
     AchievementStage = 0
     InputReady = false
     broadcast "finished"
-    broadcastAndWait "settlementScore"
+    syncMonitors
     println "FINISH", reason, Score, Mushrooms, Diamonds, RunTime, BodyX, PlayerFeet, "BEST", BestScore, "NEW", NewRecord
 }
 func obstacle(k int, kind int, x float64, y float64) {
@@ -219,6 +242,7 @@ func resetRun() {
     BackgroundStartedAt = 0
     epoch++
     Score = 0
+    FinalScore = 0
     Mushrooms = 0
     Diamonds = 0
     RunTime = 0
@@ -391,6 +415,7 @@ onStart => {
             broadcastAndWait "render"
         }
         Lita.setLayer Front
+        syncMonitors
         broadcastAndWait "uiTick"
         broadcastAndWait "uiLayers"
         wait 0.016

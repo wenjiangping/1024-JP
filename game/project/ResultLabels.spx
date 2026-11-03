@@ -1,6 +1,0 @@
-onStart => { hide }
-onMsg "uiTick", => {
-    setXYpos 0, -25
-    setSize 0.5
-    if Screen == 3 { show; setLayer Front } else { hide }
-}

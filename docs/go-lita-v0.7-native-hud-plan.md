@@ -25,4 +25,4 @@ Repair the score handoff between the running screen and the settlement screen, w
 
 ## XBuilder rollout
 
-After this plan is reviewed in the pull request, import the generated XBP into the existing `En / IdeaDash` project, run the home → help → play → settlement flow, verify the native monitors and cover, then publish the updated project once.
+After this plan is synchronized through the pull request, import the generated XBP into the existing `En / IdeaDash` project, run the home → help → play → settlement flow, verify the native monitors and cover, then publish the updated project once.

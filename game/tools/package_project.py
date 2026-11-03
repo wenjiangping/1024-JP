@@ -23,6 +23,32 @@ def validate_project():
         "Temporary playtest fixture must not ship"
     assert "QAFlow" not in (PROJECT / "main.spx").read_text(encoding="utf-8"), \
         "Temporary screen audit must not ship"
+    monitors = [z for z in stage["zorder"]
+                if isinstance(z, dict) and z.get("type") == "monitor"]
+    expected_monitors = {
+        "ScoreMonitor": ("囤粮分", "Score", False),
+        "SettlementScoreMonitor": ("囤粮分", "FinalScore", False),
+        "RankMonitor": ("称号", "Rank", False),
+        "SettlementRankMonitor": ("称号", "Rank", False),
+    }
+    assert {m.get("name") for m in monitors} == set(expected_monitors), \
+        "Native score/title monitors differ from the runtime contract"
+    for monitor in monitors:
+        label, value, visible = expected_monitors[monitor["name"]]
+        assert (monitor.get("label"), monitor.get("val"), monitor.get("visible")) == \
+            (label, value, visible), f"Monitor binding changed: {monitor['name']}"
+        assert monitor.get("mode") == 1 and monitor.get("style") == "default" \
+            and monitor.get("target") == "", "Expected a standard stage Monitor"
+    assert len({m["builder_id"] for m in monitors}) == len(monitors), "Duplicate widget IDs"
+    removed = {"ScorePanel", "RankPanel", "ScoreDigits", "ResultRank", "ResultLabels"}
+    sprite_layers = {x for x in stage["zorder"] if isinstance(x, str)}
+    assert not removed.intersection(sprite_layers), \
+        "Custom score/title sprites must not ship"
+    thumbnail = PROJECT / "builder-thumbnail.jpeg"
+    home_cover = PROJECT / "assets/sprites/HomeCover/art.png"
+    assert thumbnail.is_file() and home_cover.is_file(), "HomeCover thumbnail assets are required"
+    assert read_json(home_cover.parent / "index.json")["visible"] is True, \
+        "HomeCover must be visible in the editor so auto thumbnails retain it"
     ids, names = [], []
     expected_controls = {
         "MoveLeft": (-205, -156, 0.21),
