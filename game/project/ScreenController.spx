@@ -7,8 +7,6 @@ onMsg "input", => {
 }
 // Explicit layer order after the world, independent of broadcast handler order.
 onMsg "uiLayers", => {
-    ScorePanel.setLayer Front
-    RankPanel.setLayer Front
     if Screen == 0 { HomeCover.setLayer Front; StartButton.setLayer Front }
     if Screen == 1 { Dimmer.setLayer Front; HelpPanel.setLayer Front }
     if Screen == 3 {

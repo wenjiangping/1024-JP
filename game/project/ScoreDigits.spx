@@ -1,50 +1,28 @@
-// Score digits. Live HUD refreshes; settlement digits draw once per slot.
-var (
-    Slot int
-    settlementDrawn [8]bool
-)
-onStart => {
-    hide
-    for i := 0; i < 8; i++ { settlementDrawn[i] = false }
-}
+// Original orange digits, rendered only from the frozen settlement snapshot.
+var Slot int
+onStart => { hide }
 onMsg "clear", => { if isCloned { die } }
 onMsg "setup", => {
     if !isCloned {
         hide
-        for i := 0; i < 8; i++ { settlementDrawn[i] = false }
-        for i := 0; i < 8; i++ {
-            Slot = i
-            clone
-        }
+        for i := 0; i < 8; i++ { Slot = i; clone }
     }
 }
 onMsg "uiTick", => {
     if !isCloned { return }
-    n := Score
+    if Screen != 3 { hide; return }
+    n := FinalScore
     count := 1
     for n >= 10 { n /= 10; count++ }
-    if Screen == 0 || Screen == 2 || Slot >= count {
-        hide
-        return
-    }
-    if Screen == 3 {
-        if settlementDrawn[Slot] { return }
-        n = Score
-        for i := 0; i < Slot; i++ { n /= 10 }
-        setCostume n % 10
-        setSize 0.6
-        setXYpos -66 + (float64(count-1)/2-float64(Slot))*30, -59
-        show
-        setLayer Front
-        settlementDrawn[Slot] = true
-        return
-    }
-    n = Score
+    if Slot >= count { hide; return }
+    n = FinalScore
     for i := 0; i < Slot; i++ { n /= 10 }
     setCostume n % 10
-    setSize 0.2
-    setXYpos -155 + (float64(count-1)/2-float64(Slot))*9, 162
+    digitStep := 30.0
+    if count > 4 { digitStep = 120.0 / float64(count) }
+    setSize digitStep / 50
+    setXYpos -66 + (float64(count-1)/2-float64(Slot))*digitStep, -59
     show
-    setLayer Front
 }
-onMsg "scoreFront", => { if isCloned { setLayer Front } }
+// The result panel is raised after uiTick; raise every digit after that panel.
+onMsg "scoreFront", => { if isCloned && Screen == 3 { setLayer Front } }
