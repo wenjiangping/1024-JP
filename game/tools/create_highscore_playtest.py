@@ -6,8 +6,6 @@ from zipfile import ZIP_DEFLATED, ZipFile
 PROJECT = Path(__file__).resolve().parents[1] / "project"
 
 EXTRA = '''
-var QACapacityBusy bool
-var QACapacityAutoplay bool
 func qaCapacitySweep() {
     if QACapacityBusy { return }
     QACapacityBusy = true
@@ -49,6 +47,8 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     source = (PROJECT / "main.spx").read_text(encoding="utf-8")
+    # XGo classfiles allow one top-level variable declaration block.
+    source = source.replace("var (", "var (\n    QACapacityBusy bool\n    QACapacityAutoplay bool", 1)
     source = source.replace("onClick => {", EXTRA + "\nonClick => {", 1)
     source = source.replace('func resetRun() {',
                             'func resetRun() {\n    QACapacityAutoplay = false', 1)
