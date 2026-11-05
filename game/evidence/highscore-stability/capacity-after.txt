@@ -1,0 +1,16 @@
+PASS fractional quota: 60000 allocations, count <= 2, no backlog
+PASS score=0 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=19 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=20 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=39 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=40 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=59 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=60 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=70 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=79 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=80 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=99 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=100 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=126 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=999 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS 280000 generated routes; no array overflow or cross-chunk obstacle write

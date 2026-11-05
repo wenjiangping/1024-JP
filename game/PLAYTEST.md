@@ -103,3 +103,21 @@ QA 后再次导入正式包并编译运行至首页；导出云端存档确认 3
 `python game/tools/package_project.py --check`、工具语法检查及 `git diff --check` 通过。本轮仅发布一次，发布说明使用玩家可读的简短概述：“优化界面布局与结算展示，提升游戏体验。”。[发布成功](evidence/v07-followup/publish-success.png)。PR 保持打开，未合并。
 
 发布后在公开版本自然试玩，结算显示 6 / 蹦跶小新手，保留原版橙色文字，无“新纪录！”气泡；运行控件左右外边距一致，HomeCover 与简短发布历史均正常。[公开版运行](evidence/v07-followup/published-live-balanced.png)、[公开版结算](evidence/v07-followup/published-settlement.png)、[公开封面](evidence/v07-followup/published-homecover.png)。
+
+
+## 高分运行稳定性回归（2026-11-05）
+
+基于已合并 PR #5 的 GitHub main 创建 `codex/fix-highscore-obstacle-capacity`，先提交 [PR #6](https://github.com/wenjiangping/1024-JP/pull/6)，再同步 XBuilder 原项目。
+
+- 原云端项目导出备份；37 份 SPX 脚本与 GitHub main 一致。
+- 原始生成器的密度从 60 分起超过每段两个固定障碍槽位。修复在累计配额前将实际密度封顶为 2；低分配额、速度与安全路线保持原规则。
+- 本地回归直接提取生产生成函数，仅转换 XGo 调用写法并添加观测。旧源码在 60 分跨路段写入失败；新版 14 档积分共 28 万次路段再生、6 万次配额分配通过，含数组范围、槽位归属、双障碍间距、缺口与开局安全路线。[旧版反例](evidence/highscore-stability/capacity-before.txt)、[修复后](evidence/highscore-stability/capacity-after.txt)。
+- XBuilder SPX 3.3.0 中临时包编译通过；14 档积分共 2800 次路段再生完成，控制台出现 `QA_CAPACITY_ALL_PASS 2800`。[记录](evidence/highscore-stability/xbuilder-sweep.txt)、[截图](evidence/highscore-stability/qa-sweep.png)。
+- 临时包从 70 分运行到 152 分，经过 80/100 分阈值，持续约 65.155 秒，地图与收集物继续循环；高档日志实际生成数始终为 2，配额无积压。手动结束后原版结算显示 152 / 森林守护者，Enter 重试恢复 0 分。[运行](evidence/highscore-stability/qa-highscore-live.png)、[结算](evidence/highscore-stability/qa-highscore-settlement.png)、[日志](evidence/highscore-stability/xbuilder-finish.txt)。
+
+临时包为稳定持续运行跳过了角色物理与危险事件，70 分为预置数据；以上不作为自然试玩成绩。正式源码没有该入口，打包检查拒绝 `QACapacity`。测试后已重新导入正式修复包并编译成功，首页 HomeCover 正常。[正式首页](evidence/highscore-stability/production-home.png)。
+
+
+正式包自然试玩收集 6 个蘑菇后正常结算为 6 / 蹦跶小新手。[正式结算](evidence/highscore-stability/production-settlement.png)、[日志](evidence/highscore-stability/production-log.txt)。发布前从原云端项目再次导出，37 份 SPX 脚本与仓库正式源码逐字节一致；无 QA 标记，两个系统 Monitor 与 HomeCover 保持正确。
+
+本轮在原项目成功发布一次，说明为“修复游戏运行问题，提升游玩稳定性。”；公开项目发布历史已显示该简短概述。[发布成功](evidence/highscore-stability/publish-success.png)、[公开历史](evidence/highscore-stability/published-history.png)。

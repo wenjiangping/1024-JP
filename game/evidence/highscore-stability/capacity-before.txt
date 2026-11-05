@@ -1,0 +1,24 @@
+PASS score=0 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=19 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=20 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=39 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=40 regenerated=20000: slot ownership, bounds, spacing, safe routes
+PASS score=59 regenerated=20000: slot ownership, bounds, spacing, safe routes
+panic: slot ownership violated: score=60 chunk=2 index=6
+
+goroutine 1 [running]:
+main.obstacle(0x6, 0x4072b00000000000?, 0x408db9d7f595ed64?, 0xc057800000000000?)
+	D:/AAA-WORK/CodeX-other/go-lita-highscore-fix-20261105/temp/capacity-tv91vh1x/main.go:114 +0x28c
+main.makeChunk(0x2, 0x4089000000000000, 0x0)
+	D:/AAA-WORK/CodeX-other/go-lita-highscore-fix-20261105/temp/capacity-tv91vh1x/main.go:176 +0x7af
+main.main()
+	D:/AAA-WORK/CodeX-other/go-lita-highscore-fix-20261105/temp/capacity-tv91vh1x/main.go:234 +0x6a5
+exit status 2
+Traceback (most recent call last):
+  File "D:\AAA-WORK\CodeX-other\go-lita-highscore-fix-20261105\repo\game\tools\check_obstacle_capacity.py", line 132, in <module>
+    main()
+  File "D:\AAA-WORK\CodeX-other\go-lita-highscore-fix-20261105\repo\game\tools\check_obstacle_capacity.py", line 128, in main
+    subprocess.run(["go", "run", str(program)], env=env, check=True)
+  File "C:\Users\82381\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['go', 'run', 'D:\\AAA-WORK\\CodeX-other\\go-lita-highscore-fix-20261105\\temp\\capacity-tv91vh1x\\main.go']' returned non-zero exit status 1.
