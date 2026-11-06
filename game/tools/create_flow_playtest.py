@@ -18,7 +18,7 @@ def main():
     extra='''
 func qaThreshold(stage int) {
     resetRun
-    Score = stage*20-1
+    Score = stage*30-1
     Mushrooms = Score
     DifficultyStage = -1
     updateDifficulty
@@ -34,7 +34,7 @@ func qaAudit() {
     resetRun
     Paused = true
     for i := 0; i <= 5; i++ {
-        Score = i*20
+        Score = i*30
         Mushrooms = Score
         DifficultyStage = -1
         updateDifficulty

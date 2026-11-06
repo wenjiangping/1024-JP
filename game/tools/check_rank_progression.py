@@ -11,7 +11,7 @@ from check_obstacle_capacity import extract_function, PROJECT
 def make_harness(source):
     globals_block = source[source.index('var ('):source.index('\nfunc syncMonitors')]
     functions = '\n\n'.join(extract_function(source, name) for name in
-                            ['updateRank', 'updateDifficulty', 'collectItem', 'finishRun'])
+                            ['scoreStage', 'updateRank', 'updateDifficulty', 'collectItem', 'finishRun'])
     functions = re.sub(r'println (.*?)(?= }$|$)', r'trace(\1)', functions, flags=re.MULTILINE)
     functions = re.sub(r'^(\s*)(updateRank|updateDifficulty|syncMonitors)$',
                        r'\1\2()', functions, flags=re.MULTILINE)
@@ -35,35 +35,40 @@ func initRun(score int) {
 }
 func check(score int, title string) {
     require(Score == score && Rank == title, fmt.Sprintf("score/title: %d %q", Score, Rank))
-    stage := score/20
+    stage := expectedStage(score)
     if stage > 5 { stage = 5 }
     factor := 1.0
     for i := 0; i < stage; i++ { factor *= 1.3 }
     require(DifficultyStage == stage && math.Abs(Speed-58*factor)<1e-9 && math.Abs(ObstacleDensity-factor)<1e-9, "difficulty changed")
 }
+var thresholds = []int{0,30,60,90,120,150,180,210,260,310,360}
+func expectedStage(score int) int {
+    stage := 0
+    for i, threshold := range thresholds { if score >= threshold { stage = i } }
+    return stage
+}
 func main() {
     // Every score, including each boundary's neighbours and the final title cap.
     initRun(0)
-    for score := 0; score <= 250; score++ {
-        expected := score/20
-        if expected > 10 { expected = 10 }
+    for score := 0; score <= 450; score++ {
+        expected := expectedStage(score)
         previous := RankStage
         Score = score
         AchievementStage, AchievementTime, obstacleBudget = 0, 0.75, 0.625
         updateDifficulty()
         check(score, titles[expected])
-        if score > 0 && score%20 == 0 && score <= 200 {
+        if expected != previous {
             require(AchievementStage == expected && AchievementTime == 0, "missing promotion badge")
         } else {
             require(AchievementStage == 0 && AchievementTime == 0.75, "duplicate promotion badge")
         }
-        if previous >= 5 { require(obstacleBudget == 0.625, "title promotion reset terrain quota") }
+        if previous >= 5 && !(previous < 7 && expected >= 7) { require(obstacleBudget == 0.625, "unexpected terrain quota reset") }
     }
     // Actual pickups cross every old/new boundary, including a +3 crystal jump.
     for stage := 1; stage <= 10; stage++ {
         for _, crystal := range []bool{false, true} {
-            start, item, score := stage*20-1, 0, stage*20
-            if crystal { start, item, score = stage*20-2, 2, stage*20+1 }
+            start, item, score := thresholds[stage]-1, 0, thresholds[stage]
+            if crystal { start, item, score = thresholds[stage]-2, 2, thresholds[stage]+1 }
             initRun(start)
             collectItem(item)
             check(score, titles[stage])
@@ -88,7 +93,7 @@ func main() {
     initRun(0)
     check(0, titles[0])
     require(AchievementStage == 0, "initial run showed promotion")
-    fmt.Println("PASS 251 score values; 20 mushroom/crystal boundary crossings; duplicate/paused/finished pickups; frozen settlement; original difficulty and quota; title cap/reset")
+    fmt.Println("PASS 451 score values; 20 mushroom/crystal boundary crossings; duplicate/paused/finished pickups; frozen settlement; capped speed and stage-7 quota reset; title cap/reset")
 }
 '''
 

@@ -36,13 +36,13 @@ var (
     LT [5]float64
     LW [5]float64
     HasLedge [5]bool
-    // Two slots per chunk: 1 stone, 2 stump, 3 rock pile (solid);
+    // Three slots per chunk: 1 stone, 2 stump, 3 rock pile (solid);
     // 4 fire, 5 bomb (dangerous). OW is the collision half-width.
-    OX [10]float64
-    OY [10]float64
-    OKind [10]int
-    OW [10]float64
-    OH [10]float64
+    OX [15]float64
+    OY [15]float64
+    OKind [15]int
+    OW [15]float64
+    OH [15]float64
     ItemX [15]float64
     ItemY [15]float64
     ItemTaken [15]bool
@@ -82,9 +82,14 @@ func syncMonitors() {
     }
 }
 
-func updateRank() {
-    stage := Score / 20
+func scoreStage() int {
+    stage := Score / 30
+    if Score >= 210 { stage = 7 + (Score - 210) / 50 }
     if stage > 10 { stage = 10 }
+    return stage
+}
+func updateRank() {
+    stage := scoreStage()
     if stage > RankStage && RankStage >= 0 {
         AchievementStage = stage
         AchievementTime = 0
@@ -104,9 +109,9 @@ func updateRank() {
     if RankStage == 10 { Rank = "森林传说王" }
 }
 func updateDifficulty() {
-    // Titles keep progressing after difficulty reaches its original cap.
+    previousRank := RankStage
     updateRank
-    stage := Score / 20
+    stage := RankStage
     if stage > 5 { stage = 5 }
     if stage != DifficultyStage {
         DifficultyStage = stage
@@ -117,6 +122,8 @@ func updateDifficulty() {
         obstacleBudget = 0
         println "DIFFICULTY", DifficultyStage, Score, Rank, Speed, ObstacleDensity
     }
+    // The high-score quota changes once at stage 7; later titles retain it.
+    if previousRank >= 0 && previousRank < 7 && RankStage >= 7 { obstacleBudget = 0 }
 }
 
 func collectItem(i int) {
@@ -156,10 +163,9 @@ func obstacle(k int, kind int, x float64, y float64) {
 }
 
 func nextObstacleCount() int {
-    // Each chunk owns exactly two slots. Saturate before accumulating so
-    // higher stages cannot spill into another chunk or build a backlog.
+    // Stages 7-10 use all three owned slots; earlier stages retain their quotas.
     density := ObstacleDensity
-    if density > 2 { density = 2 }
+    if RankStage >= 7 { density = 3 } else if density > 2 { density = 2 }
     obstacleBudget += density
     count := int(obstacleBudget)
     obstacleBudget -= float64(count)
@@ -182,7 +188,7 @@ func makeChunk(i int, left float64, opening bool) {
         gap = rand(36.0, 48.0)
         top = previousTop
         // Leave the takeoff and landing clear around every gap.
-        for j := 0; j < 10; j++ {
+        for j := 0; j < len(OKind); j++ {
             if OX[j] > left - 140 && OX[j] < left + 2 { OKind[j] = 0 }
         }
     } else if pattern == 4 { pattern = 0 }
@@ -194,23 +200,24 @@ func makeChunk(i int, left float64, opening bool) {
     // Lower route keeps at least 50px headroom; jump apex is about 100px.
     LT[i] = top + 84
     LW[i] = rand(96.0, 112.0)
-    a := i * 2
-    OKind[a] = 0
-    OKind[a+1] = 0
+    slots := len(OKind) / len(PX)
+    a := i * slots
+    for j := 0; j < slots; j++ { OKind[a+j] = 0 }
     if !opening && !previousGap && gap == 0 && pattern != 0 {
-        // Fractional quotas apply until the two-slot route capacity is reached.
+        // The first solid and following hazards form one jumpable cluster at high scores.
         count := nextObstacleCount()
         for j := 0; j < count; j++ {
             kind := 1 + int(rand(0, 299)) % 3
-            if progress > 1100 && (pattern == 5 || pattern == 6 || pattern == 9) {
-                if pattern == 6 { kind = 5 } else { kind = 4 }
-                // Preserve a clear jump corridor on routes with two obstacles.
-                if j == 0 && count == 2 { kind = 1 + int(rand(0, 299)) % 3 }
+            if progress > 1100 && (pattern == 5 || pattern == 6 || pattern == 8 || pattern == 9) {
+                // Patterns 6 and 8 double bomb opportunities; 5 and 9 retain fire.
+                if pattern == 6 || pattern == 8 { kind = 5 } else { kind = 4 }
+                if j == 0 && count >= 2 { kind = 1 + int(rand(0, 299)) % 3 }
             }
             x := PX[i]
             if count == 2 {
                 if j == 0 { x = left + 78 } else { x = left + width - 60 }
             }
+            if count == 3 { x = PX[i] + float64(j-1) * 66 }
             obstacle a+j, kind, x, top
         }
         println "DENSITY", DifficultyStage, ObstacleDensity, count, obstacleBudget
@@ -232,18 +239,20 @@ func makeChunk(i int, left float64, opening bool) {
         // default line, lift the pickup into the jump arc instead of hiding it
         // behind the art or making it impossible to collect safely.
         if !HasLedge[i] {
-            for q := a; q < a+2; q++ {
+            for q := a; q < a+slots; q++ {
                 if OKind[q] > 0 && ItemX[k] > OX[q]-OW[q]-25 && ItemX[k] < OX[q]+OW[q]+25 {
                     ItemY[k] = top + 52
                 }
             }
         }
     }
-    if OKind[a] == 0 && OKind[a+1] == 0 && gap == 0 && !HasLedge[i] { challengeStreak = 0 } else { challengeStreak++ }
+    clearRoute := true
+    for j := 0; j < slots; j++ { if OKind[a+j] != 0 { clearRoute = false } }
+    if clearRoute && gap == 0 && !HasLedge[i] { challengeStreak = 0 } else { challengeStreak++ }
     previousPattern = pattern
     previousGap = gap > 0
     previousTop = top
-    if !opening { println "CHUNK", i, pattern, gap, width, top, OKind[a], OKind[a+1] }
+    if !opening { println "CHUNK", i, pattern, gap, width, top, OKind[a], OKind[a+1], OKind[a+2] }
 }
 func resetRun() {
     broadcastAndWait "clear"
@@ -410,7 +419,7 @@ onStart => {
             ScrollDX = Speed * DT
             Distance += ScrollDX
             for i := 0; i < 5; i++ { PX[i] -= ScrollDX; LX[i] -= ScrollDX }
-            for i := 0; i < 10; i++ { OX[i] -= ScrollDX }
+            for i := 0; i < len(OKind); i++ { OX[i] -= ScrollDX }
             for i := 0; i < 15; i++ { ItemX[i] -= ScrollDX }
             for i := 0; i < 5; i++ {
                 if PX[i] + PW[i] / 2 < -305 {

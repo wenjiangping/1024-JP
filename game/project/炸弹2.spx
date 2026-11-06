@@ -14,7 +14,7 @@ onMsg "clear", => {
 onMsg "setup", => {
     if !isCloned {
         hide
-        for i := 0; i < 10; i++ { Slot = i; clone }
+        for i := 0; i < len(OKind); i++ { Slot = i; clone }
     }
 }
 onCloned => { exploded = false; setCostume "默认" }

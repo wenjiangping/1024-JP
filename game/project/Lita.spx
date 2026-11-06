@@ -111,7 +111,7 @@ onMsg "physics", => {
         solid PX[i], PW[i]/2, -280, PT[i], true
         if HasLedge[i] { solid LX[i], LW[i]/2, LT[i] - 366 * LW[i]/1328, LT[i], false }
     }
-    for i := 0; i < 10; i++ {
+    for i := 0; i < len(OKind); i++ {
         if OKind[i] >= 1 && OKind[i] <= 3 { solid OX[i], OW[i], OY[i], OY[i]+OH[i], false }
     }
     if grounded && !wasGrounded { println "LAND", PlayerFeet }

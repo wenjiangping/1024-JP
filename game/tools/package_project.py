@@ -29,6 +29,8 @@ def validate_project():
         "Temporary high-score fixture must not ship"
     assert "QARank" not in (PROJECT / "main.spx").read_text(encoding="utf-8"), \
         "Temporary title fixture must not ship"
+    assert "QABalance" not in (PROJECT / "main.spx").read_text(encoding="utf-8"), \
+        "Temporary balance fixture must not ship"
     monitors = [z for z in stage["zorder"]
                 if isinstance(z, dict) and z.get("type") == "monitor"]
     expected_monitors = {
@@ -63,8 +65,8 @@ def validate_project():
         "MoveLeft": (-205, -156, 0.21),
         "MoveRight": (-150, -156, 0.21),
         "JumpButton": (-95, -156, 0.21),
-        "PauseButton": (120, -156, 0.21),
-        "RetryButton": (175, -156, 0.21),
+        "PauseButton": (150, -156, 0.21),
+        "RetryButton": (205, -156, 0.21),
     }
     expected_physics = {
         "Lita": "kinematic",
