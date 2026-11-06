@@ -1,0 +1,7 @@
+PASS production-function rank regression: 251 score values (0–250); 20 mushroom/crystal crossings at every 20-point boundary through 200; duplicate/paused/finished pickup rejection; frozen final score/title; final title cap and zero reset.
+PASS unchanged difficulty/speed/density and no obstacle quota reset on new title promotions.
+PASS terrain regression: 280000 generated routes and 60000 fractional quota allocations; bounds, per-chunk ownership, spacing and safe routes.
+PASS old Achievement/ResultRank costumes, IDs and geometry preserved.
+PASS package source/archive byte consistency: 36 sprites, 204 files.
+PASS Python tool syntax and git diff --check.
+Cloud tests use temporary preset scores and bypass hazards; these are not natural play scores.

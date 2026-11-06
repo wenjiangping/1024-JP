@@ -14,6 +14,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parents[2]
 PROJECT = ROOT / 'game/project'
 SPRITES = PROJECT / 'assets/sprites'
+NEW_RANKS = ['林海追风侠', '秘境开拓者', '星辉守望者', '万木守护神', '森林传说王']
 
 
 def dump(path, value):
@@ -53,7 +54,7 @@ def prepare_settlement_text():
         im.save(directory/f'{i}.png')
         digits.append(costume(str(i), f'{i}.png', 56, 72))
     sprite('ScoreDigits', digits)
-    ranks = ['蹦跶小新手', '树影穿梭客', '灌木飞毛腿', '林间寻路家', '风之探险家', '森林守护者']
+    ranks = ['蹦跶小新手', '树影穿梭客', '灌木飞毛腿', '林间寻路家', '风之探险家', '森林守护者'] + NEW_RANKS
     results = []
     directory = SPRITES/'ResultRank'
     directory.mkdir(parents=True, exist_ok=True)
@@ -72,11 +73,57 @@ def prepare_settlement_text():
     sprite('ResultLabels', [costume('默认', 'art.png', *im.size)], 0, -25, .5, list(im.size))
 
 
+def prepare_highscore_titles(source):
+    """Append only the five new badges/result titles, preserving existing art and IDs."""
+    badge_dir = SPRITES/'Achievement'
+    result_dir = SPRITES/'ResultRank'
+    badge_config = json.loads((badge_dir/'index.json').read_text(encoding='utf-8'))
+    result_config = json.loads((result_dir/'index.json').read_text(encoding='utf-8'))
+    manifest_path = ROOT/'game/UI-ASSETS.json'
+    manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+    font = ImageFont.truetype('C:/Windows/Fonts/msyhbd.ttc', 32)
+
+    def upsert(config, entry):
+        for i, old in enumerate(config['costumes']):
+            if old['name'] == entry['name']:
+                entry['builder_id'] = old['builder_id']
+                config['costumes'][i] = entry
+                return
+        config['costumes'].append(entry)
+
+    for stage, rank in enumerate(NEW_RANKS, 6):
+        original = source/f'{rank}.png'
+        with Image.open(original) as im:
+            original_size = im.size
+            height = round(im.height*640/im.width)
+            im.convert('RGBA').resize((640, height), Image.Resampling.LANCZOS).save(
+                badge_dir/f'{stage}.png', optimize=True)
+        upsert(badge_config, costume(str(stage), f'{stage}.png', 640, height))
+        im = Image.new('RGBA', (280, 56))
+        ImageDraw.Draw(im).text((140, 27), rank, font=font, fill='#ff6428', anchor='mm')
+        im.save(result_dir/f'{stage}.png')
+        upsert(result_config, costume(rank, f'{stage}.png', 280, 56))
+        entry = dict(source=original.name, sha256=hashlib.sha256(original.read_bytes()).hexdigest(),
+                     originalSize=original_size, runtime=f'assets/sprites/Achievement/{stage}.png',
+                     runtimeSize=[640, height])
+        manifest['assets'] = [a for a in manifest['assets'] if a['runtime'] != entry['runtime']]
+        manifest['assets'].append(entry)
+    dump(badge_dir/'index.json', badge_config)
+    dump(result_dir/'index.json', result_config)
+    dump(manifest_path, manifest)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', type=Path, default=ROOT/'素材')
+    parser.add_argument('--highscore-only', action='store_true',
+                        help='Append the five 120+ titles without rebuilding existing resources')
     args = parser.parse_args()
     source = args.source.resolve()
+    if args.highscore_only:
+        prepare_highscore_titles(source)
+        print('Prepared five high-score badges and original-style settlement titles')
+        return
     manifest = []
 
     def image_asset(name, filename, width, x=0, y=0, size=.5):
@@ -159,6 +206,7 @@ def main():
     stage['builder_spriteOrder']=[json.loads((SPRITES/n/'index.json').read_text(encoding='utf-8'))['builder_id'] for n in stage['zorder'] if isinstance(n,str)]
     dump(PROJECT/'assets/index.json',stage)
     dump(ROOT/'game/UI-ASSETS.json',dict(note='User originals preserved. Runtime HUD uses native XBuilder Monitors; settlement uses original orange text assets bound to frozen score/title.',assets=manifest))
+    prepare_highscore_titles(source)
     print(f'Prepared {len(manifest)} supplied art resources and native Monitor bindings preserved')
 
 

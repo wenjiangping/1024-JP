@@ -27,6 +27,8 @@ def validate_project():
         "Temporary native HUD fixture must not ship"
     assert "QACapacity" not in (PROJECT / "main.spx").read_text(encoding="utf-8"), \
         "Temporary high-score fixture must not ship"
+    assert "QARank" not in (PROJECT / "main.spx").read_text(encoding="utf-8"), \
+        "Temporary title fixture must not ship"
     monitors = [z for z in stage["zorder"]
                 if isinstance(z, dict) and z.get("type") == "monitor"]
     expected_monitors = {
