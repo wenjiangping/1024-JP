@@ -129,4 +129,23 @@ QA 后再次导入正式包并编译运行至首页；导出云端存档确认 3
 
 五张用户原图等比例缩至 640×358，沿用原成就精灵位置和 0.4375 倍缩放；旧造型、图片及 ID 保持原样。结算新增同样字体、颜色和尺寸的五个橙色称号造型，仍读取冻结的 `FinalRank`。
 
-本地 `check_rank_progression.py` 通过 251 个分数、20 组蘑菇/水晶跨档、重复/暂停/结束收集、结算冻结、最高称号和初始化检查；原 `check_obstacle_capacity.py` 的 28 万次路段再生及 6 万次配额分配通过。打包及逐字节检查通过，36 个精灵、204 个文件；工具语法与 `git diff --check` 通过。原项目已导出备份，37 份 SPX 与 GitHub main 一致。XBuilder 验收和发布结果将在同步后补充。
+本地 `check_rank_progression.py` 通过 251 个分数、20 组蘑菇/水晶跨档、重复/暂停/结束收集、结算冻结、最高称号和初始化检查；原 `check_obstacle_capacity.py` 的 28 万次路段再生及 6 万次配额分配通过。打包及逐字节检查通过，36 个精灵、204 个文件；工具语法与 `git diff --check` 通过。原项目已导出备份，37 份 SPX 与 GitHub main 一致。先创建 [PR #7](https://github.com/wenjiangping/1024-JP/pull/7)，再进行云端同步。
+
+
+### XBuilder 原项目验收与发布
+
+XBuilder SPX 3.3.0 编译成功。使用独立 `QARank` 临时包，从阈值前一分实际调用收集函数到达五个新分段，系统称号、成就造型及原版橙色结算称号均正确：
+
+| 分数 | 运行插图 | 冻结结算 |
+|---|---|---|
+| 120 林海追风侠 | [画面](evidence/rank-expansion/qa-120.png) | [画面](evidence/rank-expansion/qa-final-120.png) |
+| 140 秘境开拓者 | [画面](evidence/rank-expansion/qa-140.png) | [画面](evidence/rank-expansion/qa-final-140.png) |
+| 160 星辉守望者 | [画面](evidence/rank-expansion/qa-160.png) | [画面](evidence/rank-expansion/qa-final-160.png) |
+| 180 万木守护神 | [画面](evidence/rank-expansion/qa-180.png) | [画面](evidence/rank-expansion/qa-final-180.png) |
+| 200 森林传说王 | [画面](evidence/rank-expansion/qa-200.png) | [画面](evidence/rank-expansion/qa-final-200.png) |
+
+每档结算后将实时积分/称号改为测试值并尝试重复结束，结算仍保留结束时的原值。118 分收集水晶达到 121 分，显示林海追风侠并正确结算：[运行](evidence/rank-expansion/qa-crystal-121.png)、[结算](evidence/rank-expansion/qa-final-121.png)。重开清零、回到蹦跶小新手、清除旧成就；原有 100 分插图保持原样。暂停时成就留在画面，恢复后第 8 档在约 1.99 秒结束显示。所有新档速度为 215.34994，难度因子为 3.71293。[完整日志](evidence/rank-expansion/xbuilder-qa-log.txt)。临时分数为预置验收数据，临时包跳过危险与物理，不作为自然试玩成绩。
+
+恢复正式包后再次编译运行，首页 HomeCover 正常，自然收集 6 个蘑菇后结算为 6 / 蹦跶小新手：[正式结算](evidence/rank-expansion/production-settlement.png)、[日志](evidence/rank-expansion/production-log.txt)。发布前导出核对 37 份脚本逐字节一致且无 QA 标记，全部旧造型、42 份舞台/精灵/声音配置及原素材内容保持原样；两个原生 Monitor、HomeCover 与项目元信息一致。[核对记录](evidence/rank-expansion/cloud-consistency.txt)。
+
+本轮成功发布一次，简短说明为“新增高分称号与成就展示，丰富冒险体验。”：[发布成功](evidence/rank-expansion/publish-success.png)。公开项目刷新后已显示本次发布历史与 HomeCover：[公开页面](evidence/rank-expansion/published-history.png)。公开发布版已进入说明和跑酷，自然收集到 6 分后暂停，系统控件与原有操作正常：[公开版运行](evidence/rank-expansion/published-live.png)。PR #7 保持打开，未合并。

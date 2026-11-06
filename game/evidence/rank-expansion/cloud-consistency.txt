@@ -1,0 +1,5 @@
+PASS cloud baseline: all 37 SPX match GitHub main before import.
+PASS cloud production: all 37 SPX match PR source byte-for-byte, no QA markers.
+PASS Achievement 10 / ResultRank 11 costumes: names, resource bytes and geometry match production.
+PASS all prior stage/sprite/sound configs and art/audio bytes preserved, including native Monitors and HomeCover.
+PASS project metadata unchanged.
