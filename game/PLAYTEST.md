@@ -159,4 +159,16 @@ XBuilder SPX 3.3.0 编译成功。使用独立 `QARank` 临时包，从阈值前
 
 仓库首页补全页面流程、操作、精确积分公式、分段称号/速度/配额表、危险物、安全路线与工程验证信息。根目录旧 v0.1.8 移到 docs；原 docs 同名稿内容不同，两稿均保留并标注历史。当前机制以仓库 README 为准。
 
-本地生产函数检查通过：451 个积分、20 组蘑菇/水晶跨档、暂停/重复/结束收集、冻结结算、速度封顶和阶段 7 配额变化；22 个边界积分共 44 万次路段再生及 11 万次配额分配，验证槽位归属、数组范围、间距、缺口/开局安全区；逐阶段遍历 10 个模板验证炸弹机会翻倍和高阶段危险物增加。包为 36 精灵/204 文件，打包逐字节与工具语法检查通过。原云端项目已导出备份，37 份 SPX 与 GitHub main 一致。先提 PR，再同步云端；后续补充实际 XBuilder 验收。
+本地生产函数检查通过：451 个积分、20 组蘑菇/水晶跨档、暂停/重复/结束收集、冻结结算、速度封顶和阶段 7 配额变化；22 个边界积分共 44 万次路段再生及 11 万次配额分配，验证槽位归属、数组范围、间距、缺口/开局安全区；逐阶段遍历 10 个模板验证炸弹机会翻倍和高阶段危险物增加。包为 36 精灵/204 文件，打包逐字节与工具语法检查通过。原云端项目已导出备份，37 份 SPX 与 GitHub main 一致。先创建 [PR #8](https://github.com/wenjiangping/1024-JP/pull/8)，再同步原项目。
+
+### XBuilder 验收与发布
+
+XBuilder SPX 3.3.0 编译通过。独立 `QABalance` 临时包实际调用收集函数跨过 30/180/210/260/310/360 门槛，称号、对应成就图片、速度和配额正确。180 分仍为两个障碍，210 分起为三个，最高速度保持 215.34994。[30 分](evidence/stage-balance/qa-stage-30.png)、[180 分](evidence/stage-balance/qa-stage-180.png)、[210 分](evidence/stage-balance/qa-stage-210.png)、[260 分](evidence/stage-balance/qa-stage-260.png)、[310 分](evidence/stage-balance/qa-stage-310.png)。
+
+22 个门槛前后积分各生成 200 次路段，控制台出现 `QA_BALANCE_ALL_PASS 4400`，无数组越界。[日志](evidence/stage-balance/xbuilder-sweep.txt)、[画面](evidence/stage-balance/qa-sweep.png)。另从 360 分以最高速度持续生成、收集到 399 分，暂停时运行计时约 16.934 秒；新位置暂停按钮响应，点击新位置重开后积分清零、速度恢复 58。[运行与暂停](evidence/stage-balance/qa-highstage-paused.png)、[重开](evidence/stage-balance/qa-retry.png)、[日志](evidence/stage-balance/xbuilder-continuous.txt)。这两项检查使用预置积分并跳过物理/危险事件，以隔离生成和渲染行为，不是自然试玩成绩。
+
+最高速度下另行启用真实物理和危险判定，跳过中心间距 66 的“石堆＋炸弹＋火焰”组合：`JUMP -134 -102` 后约 1.145 秒 `LAND -102`，该组合没有触发死亡。此后未继续操作，在约 8.482 秒被后续自然生成的障碍挤出道路，正常结算 363 分。[跳跃与后续结算日志](evidence/stage-balance/xbuilder-jump.txt)、[后续结算](evidence/stage-balance/qa-after-jump-settlement.png)。这仅验证该测试组合，不代表所有随机路线均已自然通关。[木桩与石堆贴地、按钮布局](evidence/stage-balance/qa-ground-layout.png)。
+
+恢复正式包后再次编译成功，首页 HomeCover 正常；自然收集六个蘑菇后结算显示 6 / 蹦跶小新手，Enter 重开清零，点击新位置暂停和重开均正常。[首页](evidence/stage-balance/production-home.png)、[结算](evidence/stage-balance/production-settlement.png)、[自然日志](evidence/stage-balance/production-log.txt)、[正式暂停](evidence/stage-balance/production-live-paused.png)。发布前再次导出云端，37 份 SPX 与正式源码逐字节一致且无 QA 标记；42 份舞台/精灵/声音配置及关联素材核对一致。XBuilder 导出将系统 Monitor 排在精灵后面，各精灵顺序和两个控件定义不变；HomeCover、项目描述与操作说明正确。[核对记录](evidence/stage-balance/cloud-consistency.txt)。
+
+本轮原项目成功发布一次，玩家可见说明为“优化操作布局与挑战节奏，提升冒险体验。”。[发布成功](evidence/stage-balance/publish-success.png)。公开页已显示该条发布历史和 HomeCover。[公开页](evidence/stage-balance/published-history.png)。公开版本实际进入说明与跑酷，自然结算为 6 / 蹦跶小新手；Enter 重开清零，P 暂停后两组按钮外边距一致，系统 Monitor 正常。[公开结算](evidence/stage-balance/published-settlement.png)、[公开运行](evidence/stage-balance/published-live-paused.png)。PR #8 保持打开，未合并。

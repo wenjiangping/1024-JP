@@ -1,0 +1,5 @@
+PASS: 37 SPX scripts byte-identical to production source; no QA markers.
+PASS: all 42 stage/sprite/sound configs match source after asset path hashing and native monitor/sprite order separation.
+NOTE: XBuilder export groups native monitors after sprites; sprite order and monitor definitions are unchanged.
+PASS: project metadata and public instructions preserved from original cloud project.
+PASS: pause/retry positions 150/205; HomeCover visible; native Score/Rank monitors preserved.
