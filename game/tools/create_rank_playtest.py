@@ -28,15 +28,15 @@ func qaRankFinish() {
     collectItem 1
     println "QA_RANK_FROZEN", FinalScore, FinalRank
 }
-onKey Key1, => { qaRankShow 120, false }
-onKey Key2, => { qaRankShow 140, false }
-onKey Key3, => { qaRankShow 160, false }
-onKey Key4, => { qaRankShow 180, false }
-onKey Key5, => { qaRankShow 200, false }
-onKey Key6, => { qaRankShow 120, true }
+onKey Key1, => { qaRankShow 180, false }
+onKey Key2, => { qaRankShow 210, false }
+onKey Key3, => { qaRankShow 260, false }
+onKey Key4, => { qaRankShow 310, false }
+onKey Key5, => { qaRankShow 360, false }
+onKey Key6, => { qaRankShow 180, true }
 onKey Key7, => { qaRankFinish }
 onKey Key8, => { Paused = false }
-onKey Key9, => { qaRankShow 100, false }
+onKey Key9, => { qaRankShow 150, false }
 onKey Key0, => { resetRun; Paused = true; println "QA_RANK_RESET", Score, Rank, AchievementStage }
 '''
 

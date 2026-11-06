@@ -8,7 +8,7 @@ PROJECT = Path(__file__).resolve().parents[1] / "project"
 EXTRA = '''
 func qaThreshold(stage int) {
     resetRun
-    Score = stage*20-1
+    Score = stage*30-1
     Mushrooms = Score
     updateDifficulty
     ItemEnabled[0] = true

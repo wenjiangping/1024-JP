@@ -5,7 +5,7 @@ onMsg "clear", => { if isCloned { die } }
 onMsg "setup", => {
     if !isCloned {
         hide
-        for i := 0; i < 10; i++ { Slot = i; clone }
+        for i := 0; i < len(OKind); i++ { Slot = i; clone }
     }
 }
 onMsg "render", => {

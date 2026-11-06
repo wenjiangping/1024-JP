@@ -19,7 +19,7 @@ def main():
     assert "QAScenario" not in stage
     stage = stage.replace("    Score int", "    QAScenario int\n    Score int", 1)
     layout = '''    if QAScenario > 0 {
-        for i := 0; i < 10; i++ { OKind[i] = 0 }
+        for i := 0; i < len(OKind); i++ { OKind[i] = 0 }
         for i := 0; i < 15; i++ { ItemEnabled[i] = false }
         for i := 0; i < 5; i++ {
             PX[i] = -150 + float64(i)*400
