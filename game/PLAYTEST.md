@@ -121,3 +121,12 @@ QA 后再次导入正式包并编译运行至首页；导出云端存档确认 3
 正式包自然试玩收集 6 个蘑菇后正常结算为 6 / 蹦跶小新手。[正式结算](evidence/highscore-stability/production-settlement.png)、[日志](evidence/highscore-stability/production-log.txt)。发布前从原云端项目再次导出，37 份 SPX 脚本与仓库正式源码逐字节一致；无 QA 标记，两个系统 Monitor 与 HomeCover 保持正确。
 
 本轮在原项目成功发布一次，说明为“修复游戏运行问题，提升游玩稳定性。”；公开项目发布历史已显示该简短概述。[发布成功](evidence/highscore-stability/publish-success.png)、[公开历史](evidence/highscore-stability/published-history.png)。
+
+
+## 120–200 分称号扩充（2026-11-06）
+
+新增 120–139 林海追风侠、140–159 秘境开拓者、160–179 星辉守望者、180–199 万木守护神、200+ 森林传说王。0–119 分称号保持原样；称号阶段单独封顶为 10，难度仍封顶为 5，120 分后的晋升不会重置障碍配额。
+
+五张用户原图等比例缩至 640×358，沿用原成就精灵位置和 0.4375 倍缩放；旧造型、图片及 ID 保持原样。结算新增同样字体、颜色和尺寸的五个橙色称号造型，仍读取冻结的 `FinalRank`。
+
+本地 `check_rank_progression.py` 通过 251 个分数、20 组蘑菇/水晶跨档、重复/暂停/结束收集、结算冻结、最高称号和初始化检查；原 `check_obstacle_capacity.py` 的 28 万次路段再生及 6 万次配额分配通过。打包及逐字节检查通过，36 个精灵、204 个文件；工具语法与 `git diff --check` 通过。原项目已导出备份，37 份 SPX 与 GitHub main 一致。XBuilder 验收和发布结果将在同步后补充。

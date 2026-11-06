@@ -25,7 +25,7 @@ def make_harness(source):
     # branches, loop limits and all array writes intact.
     functions = re.sub(r'println (.*?)(?= }$|$)', r'trace(\1)', functions,
                        flags=re.MULTILINE)
-    functions = functions.replace("        updateRank\n", "        updateRank()\n")
+    functions = re.sub(r'^(\s*)updateRank$', r'\1updateRank()', functions, flags=re.MULTILINE)
     functions = functions.replace("            obstacle a+j, kind, x, top",
                                   "            obstacle(a+j, kind, x, top)")
     functions = functions.replace("    OKind[k] = kind", """    if k < activeChunk*2 || k >= activeChunk*2+2 {
